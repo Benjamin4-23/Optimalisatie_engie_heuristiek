@@ -39,5 +39,8 @@ public class MySolution implements Solution {
         // We'll use dijkstra to find the shortest path between all prospects
 
     }
+    public Graph getGraph() {
+        return graph;
+    }
 
 }
