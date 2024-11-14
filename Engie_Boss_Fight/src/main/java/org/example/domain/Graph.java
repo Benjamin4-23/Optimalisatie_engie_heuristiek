@@ -1,12 +1,13 @@
 package org.example.domain;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Graph {
-    public List<Node> nodes;
-    public List<Edge> edges;
+    public HashMap<Integer, Node> nodes;
+    public HashMap<Integer, Edge> edges;
 
-    public Graph() {
+    public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.nodes = nodes;
         this.edges = edges;
     }

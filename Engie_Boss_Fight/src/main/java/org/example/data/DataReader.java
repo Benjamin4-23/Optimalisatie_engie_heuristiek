@@ -15,16 +15,24 @@ import org.json.simple.parser.ParseException;
 
 public class DataReader {
     private String filepath;
-    public HashMap<Integer, Node> nodes;
-    public HashMap<Integer, Edge> edges;
-    public Set<Node> existingNodes = new HashSet<>();
-    public Node rootNode;
+    private HashMap<Integer, Node> nodes;
+    private HashMap<Integer, Edge> edges;
+    private Set<Node> existingNodes = new HashSet<>();
+    private Node rootNode;
 
     // Constructor
     public DataReader(String filepath) {
         this.filepath = filepath;
         this.nodes = new HashMap<>();
         this.edges = new HashMap<>();
+    }
+
+    public HashMap<Integer, Node> getNodes() {
+        return nodes;
+    }
+
+    public HashMap<Integer, Edge> getEdges() {
+        return edges;
     }
 
     // Load and parse data from JSON file
