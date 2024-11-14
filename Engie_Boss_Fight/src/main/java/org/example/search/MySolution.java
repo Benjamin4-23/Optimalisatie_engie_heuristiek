@@ -1,4 +1,20 @@
 package org.example.search;
 
-public class MySolution {
+import org.example.search.framework.Solution;
+
+public class MySolution implements Solution {
+    @Override
+    public double getObjectiveValue() {
+        return 0;
+    }
+
+    @Override
+    public void setObjectiveValue(double value) {
+
+    }
+
+    @Override
+    public Object clone() {
+        return null;
+    }
 }

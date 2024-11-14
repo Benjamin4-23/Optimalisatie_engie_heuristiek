@@ -1,4 +1,14 @@
 package org.example.search;
 
-public class MyObjectiveFunction {
+
+import org.example.search.framework.Move;
+import org.example.search.framework.ObjectiveFunction;
+import org.example.search.framework.Solution;
+
+public class MyObjectiveFunction extends ObjectiveFunction {
+
+    @Override
+    public double evaluate(Solution solution, Move move) {
+        return 0;
+    }
 }
