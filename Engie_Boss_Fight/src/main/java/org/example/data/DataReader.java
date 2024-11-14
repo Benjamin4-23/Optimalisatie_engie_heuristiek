@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 
 
 
-class DataReader {
+public class DataReader {
     private String filepath;
     public HashMap<Integer, Node> nodes;
     public HashMap<Integer, Edge> edges;
