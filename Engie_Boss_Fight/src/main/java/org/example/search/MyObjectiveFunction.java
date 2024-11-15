@@ -10,7 +10,13 @@ public class MyObjectiveFunction extends ObjectiveFunction {
 
     @Override
     public double evaluate(Solution solution, Move move) {
-        return 0;
+        if (move == null) {
+            double result = absoluteEvaluation(solution);
+            solution.setObjectiveValue(result);
+            return result;
+        } else {
+            return deltaEvaluation(solution, move);
+        }
     }
     private double absoluteEvaluation(Solution solution) {
         double cost = 0.0;
