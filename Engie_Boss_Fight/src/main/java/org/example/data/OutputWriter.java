@@ -1,12 +1,11 @@
 package org.example.data;
 
-import org.example.domain.Edge;
-import org.example.domain.Graph;
-import org.example.domain.Node;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import org.example.domain.Edge;
+import org.example.domain.Graph;
 
 public class OutputWriter {
     private Graph graph;
@@ -22,7 +21,7 @@ public class OutputWriter {
 
         // Write used edges to buffer
         for (Edge edge : this.graph.edges.values()) {
-            if (edge.isUsed) {
+            if (edge.isUsed && edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
                 String edge1 = "\""+edge.endNode1.x+","+edge.endNode1.y+"\"";
                 String edge2 = "\""+edge.endNode2.x+","+edge.endNode2.y+"\"";
                 jsonBuffer.append("    { \"startNode\": ").append(edge1)
