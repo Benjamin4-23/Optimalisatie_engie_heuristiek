@@ -9,6 +9,5 @@ public class Main {
         SearchAlgorithm steepestDescent = new SteepestDescent();
         steepestDescent.execute(150);
         MySolution bestSolution = (MySolution) steepestDescent.getBestSolution();
-
     }
 }

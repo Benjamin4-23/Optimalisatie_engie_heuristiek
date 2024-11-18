@@ -30,6 +30,7 @@ public class MySolution implements Solution {
 
     @Override
     public Object clone() {
+        // Make a deep copy of the solution
         return null;
     }
 

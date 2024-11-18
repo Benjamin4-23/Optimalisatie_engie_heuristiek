@@ -17,8 +17,7 @@ public class MySwapTwoRandomConnections extends Move{
     private double calculateCost(){
         return 0;
     }
-    private double calculateDeltaCost(){
+    private double calculateDeltaCost() {
         return 0;
     }
-    
 }

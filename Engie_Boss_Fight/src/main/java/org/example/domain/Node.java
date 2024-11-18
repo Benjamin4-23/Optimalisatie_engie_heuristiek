@@ -17,6 +17,16 @@ public class Node {
     public Node() {
 
     }
+
+    public Node(Node node) {
+        this.id = node.id;
+        this.x = node.x;
+        this.y = node.y;
+        this.nodeType = node.nodeType;
+        this.outgoingEdges = new HashMap<>(node.outgoingEdges);
+        this.incomingEdges = new HashMap<>(node.incomingEdges);
+    }
+
     public enum NodeType {
         REGULAR, PROSPECT
     }

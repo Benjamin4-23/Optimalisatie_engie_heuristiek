@@ -12,6 +12,14 @@ public class Edge {
 
     }
 
+    public Edge(Edge edge) {
+        this.id = edge.id;
+        this.edgeType = edge.edgeType;
+        this.cost = edge.cost;
+        this.endNode1 = edge.endNode1;
+        this.endNode2 = edge.endNode2;
+    }
+
     public enum EdgeType {
         REGULAR, OFFSTREET, EXISTING
     }
