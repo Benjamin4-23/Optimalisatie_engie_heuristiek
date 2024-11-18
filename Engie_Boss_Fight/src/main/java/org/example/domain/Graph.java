@@ -85,6 +85,7 @@ public class Graph {
                     Edge pathEdge = previousEdges.get(pathNode);
                     pathEdge.cost = 0; // Set the cost to zero
                     pathNode = pathEdge.endNode1; // Move to the previous node in the path
+                    pathEdge.Use();
                 }
             }
         }
@@ -110,12 +111,14 @@ public class Graph {
         }
         jsonBuffer.append("\n  ],\n  \"edges\": [\n");
 
-        // Write all edges to buffer
+        // Write used edges to buffer
         for (Edge edge : edges.values()) {
-            String edge1 = "\""+edge.endNode1.x+","+edge.endNode1.y+"\"";
-            String edge2 = "\""+edge.endNode2.x+","+edge.endNode2.y+"\"";
-            jsonBuffer.append("    { \"startNode\": ").append(edge1)
+            if (edge.isUsed) {
+                String edge1 = "\""+edge.endNode1.x+","+edge.endNode1.y+"\"";
+                String edge2 = "\""+edge.endNode2.x+","+edge.endNode2.y+"\"";
+                jsonBuffer.append("    { \"startNode\": ").append(edge1)
                       .append(", \"endNode\": ").append(edge2).append(" },\n");
+            }
         }
         if (!edges.isEmpty()) {
             jsonBuffer.setLength(jsonBuffer.length() - 2); // Remove last comma
