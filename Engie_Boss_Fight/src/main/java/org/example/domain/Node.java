@@ -27,6 +27,31 @@ public class Node {
         this.incomingEdges = new HashMap<>(node.incomingEdges);
     }
 
+    public boolean isConnected() {
+        if (this.nodeType == NodeType.PROSPECT) {
+            // check if there are incoming edges that are active
+            for (Edge edge : incomingEdges.values()) {
+                {
+                    if (edge.isUsed) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            for (Edge edge : incomingEdges.values()) {
+                if (edge.isUsed) {
+                    return true;
+                }
+            }
+            for (Edge edge : outgoingEdges.values()) {
+                if (edge.isUsed) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public enum NodeType {
         REGULAR, PROSPECT
     }

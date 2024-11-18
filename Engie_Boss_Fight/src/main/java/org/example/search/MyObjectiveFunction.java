@@ -23,6 +23,8 @@ public class MyObjectiveFunction extends ObjectiveFunction {
         Graph graph = ((MySolution) solution).getGraph();
 
 
+
+
         return cost;
     }
     private double deltaEvaluation(Solution solution, Move move) {
