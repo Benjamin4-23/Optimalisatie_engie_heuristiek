@@ -2,6 +2,7 @@ package org.example.search;
 
 
 import org.example.domain.Edge;
+import org.example.domain.EdgeType;
 import org.example.domain.Graph;
 import org.example.search.framework.Move;
 import org.example.search.framework.ObjectiveFunction;
@@ -25,12 +26,11 @@ public class MyObjectiveFunction extends ObjectiveFunction {
 
         for (Edge edge : graph.edges.values()) {
             if(edge.isUsed){
-                //if(edge.edgeType == )
+                if(edge.edgeType != EdgeType.EXISTING){
+                    cost += edge.originalCost;
+                }
             };
         }
-
-
-
 
         return cost;
     }

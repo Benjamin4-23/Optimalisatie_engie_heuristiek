@@ -4,7 +4,7 @@ public class Edge {
     public int id;
     public EdgeType edgeType;
     public int cost;
-    public int originalCost;
+    public final int originalCost;
     public boolean isUsed;
 
     public Node endNode1;
