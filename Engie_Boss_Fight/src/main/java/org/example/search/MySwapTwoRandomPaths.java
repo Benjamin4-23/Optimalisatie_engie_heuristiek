@@ -3,7 +3,7 @@ package org.example.search;
 import org.example.search.framework.Move;
 import org.example.search.framework.Solution;
 
-public class MySwapTwoRandomConnections extends Move{
+public class MySwapTwoRandomPaths extends Move{
     @Override
     public double doMove(Solution solution) {
         return 0;
