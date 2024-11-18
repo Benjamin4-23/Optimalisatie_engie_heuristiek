@@ -22,6 +22,8 @@ public class MyObjectiveFunction extends ObjectiveFunction {
         double cost = 0.0;
         Graph graph = ((MySolution) solution).getGraph();
 
+        for ()
+
 
 
 
