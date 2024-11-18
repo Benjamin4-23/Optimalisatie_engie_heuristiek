@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 from enum import Enum, StrEnum
+import pathlib
 
 
 DOT_SIZE = 4
@@ -52,21 +53,7 @@ def read_dataset(filepath):
 def read_output(filepath):
     with open(filepath, 'r') as f:
         data = json.load(f)["edges"]
-
-    connections = []
-
-    for edge in data:
-         src_x, src_y = edge["startNode"].split(",")
-         src_x = float(src_x)
-         src_y = float(src_y)
-         dest_x, dest_y = edge["endNode"].split(",")
-         dest_x = float(dest_x)
-         dest_y = float(dest_y)
-         if (src_x == 0 and src_y == 0) or (dest_y == 0 and dest_x == 0):
-             continue
-         connections.append([[src_x, dest_x],[src_y, dest_y]])
-
-    return connections
+    return data
 
 
 
@@ -92,7 +79,9 @@ def visualize(nodes, edges, connections):
         plt.plot([src_x, dest_x], [src_y, dest_y], 'r-', )
 
     for edge in connections:
-        plt.plot(edge[0], edge[1], 'g-')
+        src_x, src_y = edge["startNode"]["x"], edge["startNode"]["y"]
+        dest_x, dest_y = edge["endNode"]["x"], edge["endNode"]["y"]
+        plt.plot([src_x, dest_x], [src_y, dest_y], 'g-')
 
     for node in nodes:
         if not nodeVisistMap[node.id]:
@@ -103,7 +92,6 @@ def visualize(nodes, edges, connections):
             elif node.type == NODE_TYPE.PROSPECT:
                 plt.plot(x, y, "orange", marker='o', markersize=DOT_SIZE)
 
-
     plt.grid(False)
     plt.axis('off')
     plt.tight_layout()
@@ -111,6 +99,7 @@ def visualize(nodes, edges, connections):
 
 
 if __name__ == "__main__":
+    print("Current path:", pathlib.Path().resolve())
     nodes, edges = read_dataset("../data/bretigny_62p_1147n_1235e.json")
-    real_edges = read_output("../graph_data.json")
+    real_edges = read_output("../output/graph_data.json")
     visualize(nodes, edges, real_edges)
