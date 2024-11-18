@@ -3,6 +3,7 @@ package org.example.search;
 import java.util.Map;
 
 import org.example.data.DataReader;
+import org.example.data.OutputWriter;
 import org.example.domain.Graph;
 import org.example.domain.Node;
 import org.example.search.framework.Solution;
@@ -16,6 +17,9 @@ public class MySolution implements Solution {
         reader.transform();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
         GenerateSolution();
+        OutputWriter writer = new OutputWriter(this.graph);
+        writer.write("graph_data.json");
+
     }
     public MySolution(Graph g, double d){
         this.graph = g;

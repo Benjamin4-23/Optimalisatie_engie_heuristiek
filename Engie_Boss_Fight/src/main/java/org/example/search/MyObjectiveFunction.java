@@ -29,9 +29,9 @@ public class MyObjectiveFunction extends ObjectiveFunction {
                 if(edge.edgeType != EdgeType.EXISTING){
                     cost += edge.originalCost;
                 }
-            };
+            }
         }
-
+        System.out.println("Cost: " + cost);
         return cost;
     }
     private double deltaEvaluation(Solution solution, Move move) {

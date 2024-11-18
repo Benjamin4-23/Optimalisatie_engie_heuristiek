@@ -98,40 +98,6 @@ public class Graph {
             }
         }
 
-        // Prepare JSON buffer
-        StringBuilder jsonBuffer = new StringBuilder();
-        jsonBuffer.append("{\n  \"nodes\": [\n");
-
-        // Write all nodes to buffer
-        for (Node node : nodes.values()) {
-            jsonBuffer.append("    { \"node_location\": \"").append(node.x).append(",").append(node.y).append("\"").append(" },\n");
-        }
-        if (!nodes.isEmpty()) {
-            jsonBuffer.setLength(jsonBuffer.length() - 2); // Remove last comma
-        }
-        jsonBuffer.append("\n  ],\n  \"edges\": [\n");
-
-        // Write used edges to buffer
-        for (Edge edge : edges.values()) {
-            if (edge.isUsed) {
-                String edge1 = "\""+edge.endNode1.x+","+edge.endNode1.y+"\"";
-                String edge2 = "\""+edge.endNode2.x+","+edge.endNode2.y+"\"";
-                jsonBuffer.append("    { \"startNode\": ").append(edge1)
-                      .append(", \"endNode\": ").append(edge2).append(" },\n");
-            }
-        }
-        if (!edges.isEmpty()) {
-            jsonBuffer.setLength(jsonBuffer.length() - 2); // Remove last comma
-        }
-        jsonBuffer.append("\n  ]\n}");
-
-        // Write buffer to JSON file
-        try {
-            Files.write(Paths.get("graph_data.json"), jsonBuffer.toString().getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         return prospectDistances;
     }
 
