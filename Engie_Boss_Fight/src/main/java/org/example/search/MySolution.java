@@ -11,7 +11,7 @@ public class MySolution implements Solution {
     private Graph graph;
     private double cost;
     public MySolution() {
-        DataReader reader = new DataReader("data/bagnolet_353p_3844n_4221e.json");
+        DataReader reader = new DataReader("data/bretigny_62p_1147n_1235e.json");
         reader.loadData();
         reader.transform();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
