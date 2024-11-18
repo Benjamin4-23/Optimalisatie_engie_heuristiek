@@ -79,7 +79,7 @@ public class Graph {
             }
 
             // If the current node is a prospect, set the cost of the path edges to zero
-            if (currentNode.nodeType == Node.NodeType.PROSPECT) {
+            if (currentNode.nodeType == NodeType.PROSPECT) {
                 Node pathNode = currentNode;
                 while (previousEdges.containsKey(pathNode)) {
                     Edge pathEdge = previousEdges.get(pathNode);
@@ -92,7 +92,7 @@ public class Graph {
         // Filter distances to only include prospect nodes
         Map<Node, Double> prospectDistances = new HashMap<>();
         for (Node node : nodes.values()) {
-            if (node.nodeType == Node.NodeType.PROSPECT) {
+            if (node.nodeType == NodeType.PROSPECT) {
                 prospectDistances.put(node, distances.get(node));
             }
         }
