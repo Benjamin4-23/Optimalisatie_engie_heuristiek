@@ -1,6 +1,7 @@
 package org.example.search;
 
 
+import org.example.domain.Edge;
 import org.example.domain.Graph;
 import org.example.search.framework.Move;
 import org.example.search.framework.ObjectiveFunction;
@@ -22,7 +23,11 @@ public class MyObjectiveFunction extends ObjectiveFunction {
         double cost = 0.0;
         Graph graph = ((MySolution) solution).getGraph();
 
-        for ()
+        for (Edge edge : graph.edges.values()) {
+            if(edge.isUsed){
+                //if(edge.edgeType == )
+            };
+        }
 
 
 

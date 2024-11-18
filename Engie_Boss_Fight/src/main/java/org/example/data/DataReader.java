@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.*;
 
 import org.example.domain.Edge;
+import org.example.domain.EdgeType;
 import org.example.domain.Node;
+import org.example.domain.NodeType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -51,7 +53,7 @@ public class DataReader {
                 double y = (double) coordsArray.get(1);
 
                 String type = (String) nodeObj.get("node_type");
-                nodes.put(id, new Node(id, x, y, Node.NodeType.valueOf(type.toUpperCase())));
+                nodes.put(id, new Node(id, x, y, NodeType.valueOf(type.toUpperCase())));
             }
 
             JSONArray edgesArray = (JSONArray) data.get("edges");
@@ -67,7 +69,7 @@ public class DataReader {
                 Node endNode1 = nodes.get(endpoint1);
                 Node endNode2 = nodes.get(endpoint2);
 
-                edges.put(id, new Edge(id, Edge.EdgeType.valueOf(type.toUpperCase()), cost, endNode1, endNode2));
+                edges.put(id, new Edge(id, EdgeType.valueOf(type.toUpperCase()), cost, endNode1, endNode2));
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -78,14 +80,14 @@ public class DataReader {
         List<Edge> directedEdges = new ArrayList<>();
         int i = 0;
         for (Edge edge : edges.values()) {
-            if(edge.edgeType == Edge.EdgeType.EXISTING){
+            if(edge.edgeType == EdgeType.EXISTING){
                 existingNodes.add(edge.endNode1);
                 existingNodes.add(edge.endNode2);
             }
-            if (nodes.get(edge.endNode1.id).nodeType == Node.NodeType.PROSPECT ||
-                    nodes.get(edge.endNode2.id).nodeType == Node.NodeType.PROSPECT) {
+            if (nodes.get(edge.endNode1.id).nodeType == NodeType.PROSPECT ||
+                    nodes.get(edge.endNode2.id).nodeType == NodeType.PROSPECT) {
                 // For edges involving a prospect, add a single directed edge towards the prospect
-                if (nodes.get(edge.endNode1.id).nodeType == Node.NodeType.PROSPECT) {
+                if (nodes.get(edge.endNode1.id).nodeType == NodeType.PROSPECT) {
                     directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode2, edge.endNode1));
                 } else {
                     directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode1, edge.endNode2));
@@ -103,13 +105,13 @@ public class DataReader {
 
         // Step 2: Add a virtual root node
         int rootId = -1;
-        rootNode = new Node(rootId, 0.0, 0.0, Node.NodeType.REGULAR); // ID -1 for the virtual root
+        rootNode = new Node(rootId, 0.0, 0.0, NodeType.REGULAR); // ID -1 for the virtual root
         nodes.put(rootId, rootNode);
 
         // Connect the root node to all existing non-prospect nodes in the network with cost 0
         for (Node node : existingNodes) {
-            if (node.nodeType != Node.NodeType.PROSPECT) {
-                Edge edgeFromRoot = new Edge(i++, Edge.EdgeType.EXISTING, 0, rootNode, node);
+            if (node.nodeType != NodeType.PROSPECT) {
+                Edge edgeFromRoot = new Edge(i++, EdgeType.EXISTING, 0, rootNode, node);
                 edges.put(edgeFromRoot.id, edgeFromRoot);
             }
         }

@@ -10,10 +10,6 @@ public class Edge {
     public Node endNode1;
     public Node endNode2;
 
-    public enum EdgeType {
-        REGULAR, OFFSTREET, EXISTING
-    }
-
     public Edge(Edge edge) {
         this.id = edge.id;
         this.edgeType = edge.edgeType;

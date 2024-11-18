@@ -52,10 +52,6 @@ public class Node {
         return false;
     }
 
-    public enum NodeType {
-        REGULAR, PROSPECT
-    }
-
     public Node(int id, double x, double y, NodeType nodeType) {
         this.id = id;
         this.x = x;
