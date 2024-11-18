@@ -1,23 +1,31 @@
 package org.example.domain;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 public class Graph {
     public HashMap<Integer, Node> nodes;
     public HashMap<Integer, Edge> edges;
+    public Node rootNode;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.nodes = nodes;
         this.edges = edges;
     }
 
-    public void addNode(){
-
+    public void addNode() {
+        // Implementation for adding a node
     }
 
-    public void addEdge(){
-
+    public void addEdge() {
+        // Implementation for adding an edge
     }
 
     // Deep copy constructor
@@ -39,6 +47,89 @@ public class Graph {
     @Override
     protected Object clone() {
         return new Graph(this);
+    }
+    public Map<Node, Double> dijkstraFromRootToProspects() {
+        Map<Node, Double> distances = new HashMap<>();
+        Node rootNode = nodes.get(-1); // id is -1 for the virtual root
+        PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparingDouble(distances::get));
+        Set<Node> visited = new HashSet<>();
+        Map<Node, Edge> previousEdges = new HashMap<>(); // Track the edge used to reach each node
+
+        // Initialize distances
+        for (Node node : nodes.values()) {
+            distances.put(node, Double.POSITIVE_INFINITY);
+        }
+        distances.put(rootNode, 0.0);
+        priorityQueue.add(rootNode);
+
+        while (!priorityQueue.isEmpty()) {
+            Node currentNode = priorityQueue.poll();
+            if (!visited.add(currentNode)) continue;
+
+            for (Edge edge : currentNode.outgoingEdges.values()) {
+                Node neighbor = edge.endNode2; // Assuming endNode1 is the source and endNode2 is the target
+                if (visited.contains(neighbor)) continue;
+
+                double newDist = distances.get(currentNode) + edge.cost;
+                if (newDist < distances.get(neighbor)) {
+                    distances.put(neighbor, newDist);
+                    priorityQueue.add(neighbor);
+                    previousEdges.put(neighbor, edge);
+                }
+            }
+
+            // If the current node is a prospect, set the cost of the path edges to zero
+            if (currentNode.nodeType == Node.NodeType.PROSPECT) {
+                Node pathNode = currentNode;
+                while (previousEdges.containsKey(pathNode)) {
+                    Edge pathEdge = previousEdges.get(pathNode);
+                    pathEdge.cost = 0; // Set the cost to zero
+                    pathNode = pathEdge.endNode1; // Move to the previous node in the path
+                }
+            }
+        }
+
+        // Filter distances to only include prospect nodes
+        Map<Node, Double> prospectDistances = new HashMap<>();
+        for (Node node : nodes.values()) {
+            if (node.nodeType == Node.NodeType.PROSPECT) {
+                prospectDistances.put(node, distances.get(node));
+            }
+        }
+
+        // Prepare JSON buffer
+        StringBuilder jsonBuffer = new StringBuilder();
+        jsonBuffer.append("{\n  \"nodes\": [\n");
+
+        // Write all nodes to buffer
+        for (Node node : nodes.values()) {
+            jsonBuffer.append("    { \"node_location\": \"").append(node.x).append(",").append(node.y).append("\"").append(" },\n");
+        }
+        if (!nodes.isEmpty()) {
+            jsonBuffer.setLength(jsonBuffer.length() - 2); // Remove last comma
+        }
+        jsonBuffer.append("\n  ],\n  \"edges\": [\n");
+
+        // Write all edges to buffer
+        for (Edge edge : edges.values()) {
+            String edge1 = "\""+edge.endNode1.x+","+edge.endNode1.y+"\"";
+            String edge2 = "\""+edge.endNode2.x+","+edge.endNode2.y+"\"";
+            jsonBuffer.append("    { \"startNode\": ").append(edge1)
+                      .append(", \"endNode\": ").append(edge2).append(" },\n");
+        }
+        if (!edges.isEmpty()) {
+            jsonBuffer.setLength(jsonBuffer.length() - 2); // Remove last comma
+        }
+        jsonBuffer.append("\n  ]\n}");
+
+        // Write buffer to JSON file
+        try {
+            Files.write(Paths.get("graph_data.json"), jsonBuffer.toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return prospectDistances;
     }
 
     // Getters and setters can be added here if needed
