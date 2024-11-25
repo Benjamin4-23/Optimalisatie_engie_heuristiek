@@ -106,4 +106,4 @@ if __name__ == "__main__":
     print("Current path:", pathlib.Path().resolve())
     nodes, edges = read_dataset("../data/bretigny_62p_1147n_1235e.json")
     real_edges = read_output("../output/graph_data.json")
-    visualize(nodes, edges, real_edges[:-1])
+    visualize(nodes, edges, real_edges)

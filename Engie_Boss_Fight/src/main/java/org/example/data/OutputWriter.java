@@ -27,7 +27,7 @@ public class OutputWriter {
             }
         }
         if (!this.graph.edges.isEmpty()) {
-            jsonBuffer.setLength(jsonBuffer.length() - 2); // Remove last comma
+            jsonBuffer.setLength(jsonBuffer.length() - 1); // Remove last comma
         }
         jsonBuffer.append("]}");
 
