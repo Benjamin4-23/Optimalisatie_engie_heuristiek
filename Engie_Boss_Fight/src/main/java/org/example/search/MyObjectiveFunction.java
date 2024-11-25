@@ -24,14 +24,14 @@ public class MyObjectiveFunction extends ObjectiveFunction {
         double cost = 0.0;
         Graph graph = ((MySolution) solution).getGraph();
 
-        for (Edge edge : graph.edges.values()) {
+        for (Edge edge : graph.edges.values()) { // TODO: only iterate over the used edges
             if(edge.isUsed){
                 if(edge.edgeType != EdgeType.EXISTING){
                     cost += edge.originalCost;
                 }
             }
         }
-        System.out.println("Cost: " + cost);
+        //System.out.println("Cost: " + cost);
         return cost;
     }
     private double deltaEvaluation(Solution solution, Move move) {

@@ -36,8 +36,8 @@ public class MySolution implements Solution {
     }
 
     @Override
-    public Object clone() {
-        // Make a deep copy of the solution
+    public Object clone() { // TODO: Make a deep copy of the solution
+
         return null;
     }
 
@@ -46,6 +46,7 @@ public class MySolution implements Solution {
         // We will start on the existing network, connect all prospects
         // We'll use dijkstra to find the shortest path between all prospects
         Map<Node, Double> test = graph.dijkstraFromRootToProspects();
+
     }
     public Graph getGraph() {
         return graph;

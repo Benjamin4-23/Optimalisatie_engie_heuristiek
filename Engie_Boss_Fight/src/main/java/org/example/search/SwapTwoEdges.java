@@ -3,7 +3,7 @@ package org.example.search;
 import org.example.search.framework.Move;
 import org.example.search.framework.Solution;
 
-public class MySwapTwoRandomPaths extends Move{
+public class SwapTwoEdges extends Move {
     private Solution solution;
     private double delta;
     private double oldCost = 0.0;
@@ -12,8 +12,7 @@ public class MySwapTwoRandomPaths extends Move{
         this.solution = solution;
         oldCost = solution.getObjectiveValue();
 
-        // switch two random paths
-        // ...
+        //TODO:  switch two random paths
 
 
         return calculateDeltaEvaluation();
