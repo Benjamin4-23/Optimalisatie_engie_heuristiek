@@ -1,5 +1,8 @@
 package org.example.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Edge {
     public int id;
     public EdgeType edgeType;
@@ -10,6 +13,7 @@ public class Edge {
     public Node endNode1;
     public Node endNode2;
     public int originalID;
+    public List<Edge> oldEdges;
 
     public Edge(Edge edge) {
         this.id = edge.id;
@@ -19,6 +23,7 @@ public class Edge {
         this.endNode1 = edge.endNode1;
         this.endNode2 = edge.endNode2;
         this.isUsed = edge.isUsed;
+        this.oldEdges = edge.oldEdges;
     }
 
     public Edge(int id, EdgeType edgeType, int cost, Node endpoint1, Node endpoint2, int originalId) {
@@ -30,10 +35,15 @@ public class Edge {
         this.endNode2 = endpoint2;
         this.isUsed = false;
         this.originalID = originalId;
+        this.oldEdges = new ArrayList<>();
     }
 
     public void Use(){
         this.isUsed = true;
+        // Set each value of the old edges to true
+        for (Edge edge : oldEdges) {
+            edge.isUsed = true;
+        }
     }
 
     @Override

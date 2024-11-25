@@ -25,6 +25,7 @@ public class MySolution implements Solution {
         DataReader reader = new DataReader("data/"+file);
         reader.loadData();
         reader.transform();
+        reader.simplify();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
         GenerateSolution();
         OutputWriter writer = new OutputWriter(this.graph);
