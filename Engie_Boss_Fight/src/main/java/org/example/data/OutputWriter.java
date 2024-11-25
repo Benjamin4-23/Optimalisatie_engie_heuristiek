@@ -13,11 +13,11 @@ public class OutputWriter {
         this.graph = graph;
     }
 
-    public void write(String fileName) {
+    public void write(String fileName, double objectiveValue) {
         // Prepare JSON buffer
         StringBuilder jsonBuffer = new StringBuilder();
 
-        jsonBuffer.append(String.format("{\"objective_value\":%d,", 123456));
+        jsonBuffer.append(String.format("{\"objective_value\":%d,", objectiveValue));
         jsonBuffer.append("\"edges\": [");
 
         // Write used edges to buffer
