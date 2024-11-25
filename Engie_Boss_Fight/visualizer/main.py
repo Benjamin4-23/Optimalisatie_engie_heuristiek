@@ -19,6 +19,7 @@ class NODE_TYPE(StrEnum):
 
 nodeMap = {}
 nodeVisistMap = {}
+edgeConnMap = {}
 
 class Node:
     def __init__(self, json_data):
@@ -64,12 +65,14 @@ def visualize(nodes, edges, connections):
     plt.figure(figsize=(20, 20))
 
     for edge in edges:
-        if edge.type != EDGE_TYPE.EXISTING:
-            continue
-
         srcID, destID = edge.get_connection()
         src_x, src_y = nodeMap[srcID].get_coords()
         dest_x, dest_y = nodeMap[destID].get_coords()
+        edgeConnMap[edge.id] = [[src_x, dest_x], [src_y, dest_y]]
+
+        if edge.type != EDGE_TYPE.EXISTING:
+            continue
+
         if not nodeVisistMap[srcID]:
             plt.plot(src_x, src_y, 'ro', markersize=DOT_SIZE)
             nodeVisistMap[srcID] = True
@@ -81,9 +84,8 @@ def visualize(nodes, edges, connections):
         plt.plot([src_x, dest_x], [src_y, dest_y], 'r-', )
 
     for edge in connections:
-        src_x, src_y = edge["startNode"]["x"], edge["startNode"]["y"]
-        dest_x, dest_y = edge["endNode"]["x"], edge["endNode"]["y"]
-        plt.plot([src_x, dest_x], [src_y, dest_y], 'g-')
+        arr = edgeConnMap[edge]
+        plt.plot(arr[0], arr[1], 'g-')
 
     for node in nodes:
         if not nodeVisistMap[node.id]:
@@ -104,4 +106,4 @@ if __name__ == "__main__":
     print("Current path:", pathlib.Path().resolve())
     nodes, edges = read_dataset("../data/bretigny_62p_1147n_1235e.json")
     real_edges = read_output("../output/graph_data.json")
-    visualize(nodes, edges, real_edges)
+    visualize(nodes, edges, real_edges[:-1])
