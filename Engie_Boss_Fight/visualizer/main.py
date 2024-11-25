@@ -7,14 +7,10 @@ import pathlib
 DOT_SIZE = 4
 LINE_WIDTH = 2.5
 
-class EDGE_TYPE(StrEnum):
-    REGULAR = "regular"
-    OFFSTREET = "offstreet"
-    EXISTING = "existing"
-
-class NODE_TYPE(StrEnum):
-    REGULAR = "regular"
-    PROSPECT = "prospect"
+REGULAR = "regular"
+OFFSTREET = "offstreet"
+EXISTING = "existing"
+PROSPECT = "prospect"
 
 
 nodeMap = {}
@@ -26,7 +22,7 @@ class Node:
         self.id = json_data["id"]
         self.x = json_data["coords"][0]
         self.y = json_data["coords"][1]
-        self.type: NODE_TYPE = json_data["node_type"]
+        self.type = json_data["node_type"]
 
         nodeMap[self.id] = self
         nodeVisistMap[self.id] = False
@@ -38,7 +34,7 @@ class Node:
 class Edge:
     def __init__(self, json_data):
         self.id = json_data["id"]
-        self.type: EDGE_TYPE = json_data["edge_type"]
+        self.type = json_data["edge_type"]
         self.src = json_data["endpoint1"]
         self.dest = json_data["endpoint2"]
 
@@ -55,7 +51,6 @@ def read_dataset(filepath):
 def read_output(filepath):
     with open(filepath, 'r') as f:
         data = json.load(f)["edges"]
-        print(data)
     return data
 
 
@@ -70,7 +65,7 @@ def visualize(nodes, edges, connections):
         dest_x, dest_y = nodeMap[destID].get_coords()
         edgeConnMap[edge.id] = [[src_x, dest_x], [src_y, dest_y]]
 
-        if edge.type != EDGE_TYPE.EXISTING:
+        if edge.type != EXISTING:
             continue
 
         if not nodeVisistMap[srcID]:
@@ -91,9 +86,9 @@ def visualize(nodes, edges, connections):
         if not nodeVisistMap[node.id]:
             x, y = node.get_coords()
 
-            if node.type == NODE_TYPE.REGULAR:
+            if node.type == REGULAR:
                 plt.plot(x, y, 'bo', markersize=DOT_SIZE)
-            elif node.type == NODE_TYPE.PROSPECT:
+            elif node.type == PROSPECT:
                 plt.plot(x, y, "orange", marker='o', markersize=DOT_SIZE)
 
     plt.grid(False)
