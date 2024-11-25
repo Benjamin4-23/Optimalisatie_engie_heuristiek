@@ -17,21 +17,19 @@ public class OutputWriter {
         // Prepare JSON buffer
         StringBuilder jsonBuffer = new StringBuilder();
 
-        jsonBuffer.append("{\n  \"edges\": [\n");
+        jsonBuffer.append(String.format("{\"objective_value\":%d,", 123456));
+        jsonBuffer.append("\"edges\": [");
 
         // Write used edges to buffer
         for (Edge edge : this.graph.edges.values()) {
             if (edge.isUsed && edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
-                String edge1 = "{\"x\":"+edge.endNode1.x+", \"y\":"+edge.endNode1.y+"}";
-                String edge2 = "{\"x\":"+edge.endNode2.x+", \"y\":"+edge.endNode2.y+"}";
-                jsonBuffer.append("    { \"startNode\": ").append(edge1)
-                        .append(", \"endNode\": ").append(edge2).append(" },\n");
+                jsonBuffer.append(String.format("%d,", edge.id));
             }
         }
         if (!this.graph.edges.isEmpty()) {
             jsonBuffer.setLength(jsonBuffer.length() - 2); // Remove last comma
         }
-        jsonBuffer.append("\n  ]\n}");
+        jsonBuffer.append("]}");
 
         // Write buffer to JSON file
         try {

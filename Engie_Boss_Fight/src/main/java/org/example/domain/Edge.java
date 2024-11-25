@@ -9,6 +9,7 @@ public class Edge {
 
     public Node endNode1;
     public Node endNode2;
+    public int originalID;
 
     public Edge(Edge edge) {
         this.id = edge.id;
@@ -20,7 +21,7 @@ public class Edge {
         this.isUsed = edge.isUsed;
     }
 
-    public Edge(int id, EdgeType edgeType, int cost, Node endpoint1, Node endpoint2) {
+    public Edge(int id, EdgeType edgeType, int cost, Node endpoint1, Node endpoint2, int originalId) {
         this.id = id;
         this.edgeType = edgeType;
         this.cost = cost;
@@ -28,6 +29,7 @@ public class Edge {
         this.endNode1 = endpoint1;
         this.endNode2 = endpoint2;
         this.isUsed = false;
+        this.originalID = originalId;
     }
 
     public void Use(){

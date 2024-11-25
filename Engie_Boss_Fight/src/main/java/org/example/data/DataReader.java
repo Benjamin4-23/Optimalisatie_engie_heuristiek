@@ -69,7 +69,7 @@ public class DataReader {
                 Node endNode1 = nodes.get(endpoint1);
                 Node endNode2 = nodes.get(endpoint2);
 
-                edges.put(id, new Edge(id, EdgeType.valueOf(type.toUpperCase()), cost, endNode1, endNode2));
+                edges.put(id, new Edge(id, EdgeType.valueOf(type.toUpperCase()), cost, endNode1, endNode2, -1));
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -88,14 +88,14 @@ public class DataReader {
                     nodes.get(edge.endNode2.id).nodeType == NodeType.PROSPECT) {
                 // For edges involving a prospect, add a single directed edge towards the prospect
                 if (nodes.get(edge.endNode1.id).nodeType == NodeType.PROSPECT) {
-                    directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode2, edge.endNode1));
+                    directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode2, edge.endNode1, edge.id));
                 } else {
-                    directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode1, edge.endNode2));
+                    directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode1, edge.endNode2, edge.id));
                 }
             } else {
                 // For regular nodes, add two directed edges
-                directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode1, edge.endNode2));
-                directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode2, edge.endNode1));
+                directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode1, edge.endNode2, edge.id));
+                directedEdges.add(new Edge(i++, edge.edgeType, edge.cost, edge.endNode2, edge.endNode1, edge.id));
             }
         }
         edges.clear();
@@ -111,7 +111,7 @@ public class DataReader {
         // Connect the root node to all existing non-prospect nodes in the network with cost 0
         for (Node node : existingNodes) {
             if (node.nodeType != NodeType.PROSPECT) {
-                Edge edgeFromRoot = new Edge(i++, EdgeType.EXISTING, 0, rootNode, node);
+                Edge edgeFromRoot = new Edge(i++, EdgeType.EXISTING, 0, rootNode, node, -1);
                 edges.put(edgeFromRoot.id, edgeFromRoot);
             }
         }
