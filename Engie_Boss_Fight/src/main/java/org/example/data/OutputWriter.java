@@ -33,7 +33,7 @@ public class OutputWriter {
 
         // Write buffer to JSON file
         try {
-            Files.write(Paths.get("output/"+fileName), jsonBuffer.toString().getBytes());
+            Files.write(Paths.get(fileName), jsonBuffer.toString().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

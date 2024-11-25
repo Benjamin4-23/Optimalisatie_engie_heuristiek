@@ -21,6 +21,14 @@ public class SteepestDescent extends SearchAlgorithm {
         this.bestResult = this.function.evaluate(this.bestSolution, null);
         System.out.println("bestResult " + bestResult);
     }
+
+    public SteepestDescent(String file) {
+        this.function = new MyObjectiveFunction();
+        this.currentSolution = new MySolution(file);
+        this.bestSolution = this.currentSolution;
+        this.bestResult = this.function.evaluate(this.bestSolution, null);
+        System.out.println("bestResult " + bestResult);
+    }
     @Override
     public double execute(int numberOfIterations) {
         currentResult = bestResult;

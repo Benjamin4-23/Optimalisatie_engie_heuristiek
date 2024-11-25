@@ -18,7 +18,17 @@ public class MySolution implements Solution {
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
         GenerateSolution();
         OutputWriter writer = new OutputWriter(this.graph);
-        writer.write("graph_data.json", this.cost);
+        writer.write("output/graph_data.json", this.cost);
+
+    }
+    public MySolution(String file) {
+        DataReader reader = new DataReader("data/"+file);
+        reader.loadData();
+        reader.transform();
+        this.graph = new Graph(reader.getNodes(), reader.getEdges());
+        GenerateSolution();
+        OutputWriter writer = new OutputWriter(this.graph);
+        writer.write("output/"+file, this.cost);
 
     }
     public MySolution(Graph g, double d){

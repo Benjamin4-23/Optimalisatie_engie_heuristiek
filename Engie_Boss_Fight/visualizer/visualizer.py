@@ -1,8 +1,6 @@
-import matplotlib.pyplot as plt
 import json
-from enum import Enum
 import pathlib
-
+import matplotlib.pyplot as plt
 
 DOT_SIZE = 4
 LINE_WIDTH = 2.5
@@ -65,6 +63,7 @@ def visualize(nodes, edges, connections):
         dest_x, dest_y = nodeMap[destID].get_coords()
         edgeConnMap[edge.id] = [[src_x, dest_x], [src_y, dest_y]]
 
+        plt.plot([src_x, dest_x], [src_y, dest_y], color='lightgrey', linestyle='-')
         if edge.type != EXISTING:
             continue
 
@@ -76,7 +75,7 @@ def visualize(nodes, edges, connections):
             plt.plot(dest_x, dest_y, 'ro', markersize=DOT_SIZE)
             nodeVisistMap[destID] = True
 
-        plt.plot([src_x, dest_x], [src_y, dest_y], 'r-', )
+        plt.plot([src_x, dest_x], [src_y, dest_y], 'r-')
 
     for edge in connections:
         arr = edgeConnMap[edge]
