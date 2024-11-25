@@ -36,9 +36,14 @@ public class MySolution implements Solution {
     }
 
     @Override
-    public Object clone() { // TODO: Make a deep copy of the solution
-
-        return null;
+    public Object clone() {
+        MySolution copy = null;
+        try {
+            copy = new MySolution(new Graph(this.graph), this.cost);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return copy;
     }
 
     public void GenerateSolution() {

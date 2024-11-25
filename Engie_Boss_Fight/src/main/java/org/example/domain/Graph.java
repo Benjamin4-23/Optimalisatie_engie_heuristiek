@@ -3,12 +3,7 @@ package org.example.domain;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 public class Graph {
     public HashMap<Integer, Node> nodes;
@@ -100,6 +95,4 @@ public class Graph {
 
         return prospectDistances;
     }
-
-    // Getters and setters can be added here if needed
 }
