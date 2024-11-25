@@ -36,6 +36,7 @@ class Node:
 
 class Edge:
     def __init__(self, json_data):
+        self.id = json_data["id"]
         self.type: EDGE_TYPE = json_data["edge_type"]
         self.src = json_data["endpoint1"]
         self.dest = json_data["endpoint2"]
@@ -53,6 +54,7 @@ def read_dataset(filepath):
 def read_output(filepath):
     with open(filepath, 'r') as f:
         data = json.load(f)["edges"]
+        print(data)
     return data
 
 
