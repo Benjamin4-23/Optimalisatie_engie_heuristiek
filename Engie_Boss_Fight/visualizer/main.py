@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import json
-from enum import Enum, StrEnum
+from enum import Enum
 import pathlib
 
 
