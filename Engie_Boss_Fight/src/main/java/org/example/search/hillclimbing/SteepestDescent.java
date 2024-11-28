@@ -7,6 +7,10 @@ import org.example.search.framework.Move;
 import org.example.search.framework.SearchAlgorithm;
 import org.example.search.framework.Solution;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class SteepestDescent extends SearchAlgorithm {
     private MyObjectiveFunction function;
     private Solution currentSolution;
@@ -14,15 +18,7 @@ public class SteepestDescent extends SearchAlgorithm {
     private double currentResult;
     private double bestResult;
 
-    public SteepestDescent() {
-        this.function = new MyObjectiveFunction();
-        this.currentSolution = new MySolution();
-        this.bestSolution = this.currentSolution;
-        this.bestResult = this.function.evaluate(this.bestSolution, null);
-        System.out.println("bestResult " + bestResult);
-    }
-
-    public SteepestDescent(String file) {
+    public SteepestDescent(File file) {
         this.function = new MyObjectiveFunction();
         this.currentSolution = new MySolution(file);
         this.bestSolution = this.currentSolution;

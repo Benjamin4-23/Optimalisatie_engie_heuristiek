@@ -1,5 +1,8 @@
 package org.example.search;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.example.data.DataReader;
@@ -11,24 +14,14 @@ import org.example.search.framework.Solution;
 public class MySolution implements Solution {
     private Graph graph;
     private double cost;
-    public MySolution() {
-        DataReader reader = new DataReader("data/bretigny_62p_1147n_1235e.json");
-        reader.loadData();
-        reader.transform();
-        this.graph = new Graph(reader.getNodes(), reader.getEdges());
-        GenerateSolution();
-
-    }
-    public MySolution(String file) {
-        DataReader reader = new DataReader("data/"+file);
+    public MySolution(File file) {
+        assert Files.exists(Path.of(file.getPath()));
+        DataReader reader = new DataReader(file.getPath());
         reader.loadData();
         reader.transform();
         reader.simplify();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
         GenerateSolution();
-        OutputWriter writer = new OutputWriter(this.graph);
-        writer.write("output/"+file, this.cost);
-
     }
     public MySolution(Graph g, double d){
         this.graph = g;
