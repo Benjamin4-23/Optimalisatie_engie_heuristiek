@@ -72,7 +72,7 @@ class MAP_COLORS(str, Enum):
 class Map:
     __layers = {}
     __layer_names = []
-    __layer_color = {}
+    __layer_info = {}
     __layer_visibility = {}
     __layer_drawings = {}
     __layer_drawings_prec = {}
@@ -91,10 +91,10 @@ class Map:
         return ([Node(node) for node in data["nodes"]],
                 [Edge(edge) for edge in data["edges"]])
 
-    def add_layer(self, name: str, color: MAP_COLORS, data: list[ConnectionPoint]):
+    def add_layer(self, name: str, color: MAP_COLORS, data: list[ConnectionPoint], zorder=None):
         self.__layers[name] = data
-        self.__layer_color[name] = color
-        self.__layer_visibility[name] = False
+        self.__layer_info[name] = {"color": color, "z": zorder}
+        self.__layer_visibility[name] = True if zorder == 0 else False
         self.__layer_drawings_prec[name] = False
         self.__layer_drawings[name] = []
         self.__layer_names.append(name)
@@ -102,7 +102,10 @@ class Map:
     def visualize(self):
         fig, ax = plt.subplots(figsize=(20, 20))
         rax = plt.axes([0.9, 0.9, 0.2, 0.1])
-        check = CheckButtons(rax, self.__layer_names, self.__layer_visibility)
+        r = []
+        for label in self.__layer_names:
+            r.append(self.__layer_visibility[label])
+        check = CheckButtons(rax, self.__layer_names, r)
 
         for edge in self.edges:
             src_x, src_y, dest_x, dest_y = edgeConnMap[edge.id]
@@ -131,6 +134,14 @@ class Map:
                 elif node.type == NODE_TYPE.PROSPECT:
                     ax.plot(x, y, "orange", marker='o', markersize=DOT_SIZE, zorder=100)
 
+        for label in self.__layer_names:
+            if self.__layer_visibility[label]:
+                for connection in self.__layers[label]:
+                    x, y = connection.get_connection()
+                    line = ax.plot(x, y, color=self.__layer_info[label]["color"], linestyle='-')
+                    self.__layer_drawings[label].append(line)
+                self.__layer_drawings_prec[label] = True
+
         def toggle_visibility(label):
             visible = not self.__layer_visibility[label]
             self.__layer_visibility[label] = visible
@@ -143,7 +154,7 @@ class Map:
             if not self.__layer_drawings_prec[label] and visible:
                 for connection in self.__layers[label]:
                     x, y = connection.get_connection()
-                    line = ax.plot(x, y, color=self.__layer_color[label], linestyle='-')
+                    line = ax.plot(x, y, color=self.__layer_info[label]["color"], linestyle='-')
                     self.__layer_drawings[label].append(line)
                 self.__layer_drawings_prec[label] = True
 
@@ -213,5 +224,5 @@ if __name__ == "__main__":
     map = Map("../data/" + file)
     # real_edges = read_output("../output/output_" + file)
     real_edges = read_node_output("../output/output_" + file)
-    map.add_layer("Dijkstra", MAP_COLORS.GREEN, real_edges)
+    map.add_layer("Dijkstra", MAP_COLORS.GREEN, real_edges, 0)
     map.visualize()
