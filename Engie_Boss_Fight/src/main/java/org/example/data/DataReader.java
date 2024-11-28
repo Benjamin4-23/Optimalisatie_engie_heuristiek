@@ -127,9 +127,14 @@ public class DataReader {
                 }
             }
         }
+
+
     }
     public void simplify(){
         HashMap<Integer, Edge> simplifiedEdges = new HashMap<>();
+
+    }
+    public void shave(){
 
     }
 }

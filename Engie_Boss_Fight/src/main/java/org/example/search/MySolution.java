@@ -17,8 +17,6 @@ public class MySolution implements Solution {
         reader.transform();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
         GenerateSolution();
-        OutputWriter writer = new OutputWriter(this.graph);
-        writer.write("output/graph_data.json", this.cost);
 
     }
     public MySolution(String file) {
