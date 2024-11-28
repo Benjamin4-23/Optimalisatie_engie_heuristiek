@@ -77,7 +77,8 @@ class Map:
     __layer_drawings = {}
     __layer_drawings_prec = {}
 
-    def __init__(self, dataset):
+    def __init__(self, dataset, debug=False):
+        self.debug = debug
         self.nodes, self.edges = self._read_dataset(dataset)
         for edge in self.edges:
             srcID, destID = edge.get_connection()
@@ -125,14 +126,24 @@ class Map:
 
             ax.plot([src_x, dest_x], [src_y, dest_y], 'r-')
 
-        for node in self.nodes:
-            if not nodeVisistMap[node.id]:
-                x, y = node.get_coords()
+        if self.debug:
+            x_lim = ax.get_xlim()
+            y_lim = ax.get_ylim()
 
+            x_margin = (x_lim[1] - x_lim[0]) * 0.0005
+            y_margin = (y_lim[1] - y_lim[0]) * 0.0005
+
+        for node in self.nodes:
+            x, y = node.get_coords()
+            if not nodeVisistMap[node.id]:
                 if node.type == NODE_TYPE.REGULAR:
                     ax.plot(x, y, 'bo', markersize=DOT_SIZE, zorder=100)
                 elif node.type == NODE_TYPE.PROSPECT:
                     ax.plot(x, y, "orange", marker='o', markersize=DOT_SIZE, zorder=100)
+
+            if self.debug:
+                ax.text(x+x_margin, y+y_margin, node.id, fontsize=5, color='black', ha='left', va='top')
+
 
         for label in self.__layer_names:
             if self.__layer_visibility[label]:
@@ -221,7 +232,7 @@ def read_node_output(filepath) -> list[ConnectionPoint]:
 
 if __name__ == "__main__":
     file = "bretigny_62p_1147n_1235e.json"
-    map = Map("../data/" + file)
+    map = Map("../data/" + file, debug=True)
     # real_edges = read_output("../output/output_" + file)
     real_edges = read_node_output("../output/output_" + file)
     map.add_layer("Dijkstra", MAP_COLORS.GREEN, real_edges, 0)
