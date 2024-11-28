@@ -2,9 +2,16 @@ package org.example.data;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import org.example.domain.*;
+import org.example.domain.Edge;
+import org.example.domain.EdgeType;
+import org.example.domain.Node;
+import org.example.domain.NodeType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -126,116 +133,167 @@ public class DataReader {
         }
     }
 
+
+
+
     public void simplify() {
-        System.out.println("Number of edges before simplification: " + edges.size());
-        System.out.println("Number of nodes before simplification: " + nodes.size());
-
         HashMap<Integer, Edge> simplifiedEdges = new HashMap<>(edges);
-        Set<Integer> visitedNodes = new HashSet<>();
+        boolean changes;
 
-        // Get highest edge id
-        int newEdgeId = edges.values().stream().mapToInt(edge -> edge.id).max().orElse(0);
-
-        for (Node node : nodes.values()) {
-            // Skip nodes that are already visited or are not eligible for simplification
-            if (visitedNodes.contains(node.id) || node.nodeType == NodeType.PROSPECT || node.id == rootNode.id) {
-                continue;
+        
+        do {
+            changes = false;
+            // Find nodes with exactly 2 connections (4 edges due to bidirectional)
+            Set<Node> simplifiableNodes = new HashSet<>();
+            for (Node node : nodes.values()) {
+                if (node.outgoingEdges.size() == 2 && node.incomingEdges.size() == 2) {
+                    // Check if these are 2 bidirectional connections to 2 neighbors
+                    boolean connectedToNodes = true;
+                    int neighborCount = 0;
+                    for (Edge edge : node.outgoingEdges.values()) {
+                        Node neighbor = edge.endNode2;
+                        if (neighbor.nodeType == NodeType.PROSPECT || neighbor.id == rootNode.id) {
+                            connectedToNodes = false;
+                            break;
+                        } 
+                        if (neighbor.outgoingEdges.values().stream().anyMatch(e -> e.endNode2.id == node.id)) {
+                            neighborCount++;
+                        }
+                    }
+                    if (connectedToNodes && neighborCount == 2) {
+                        simplifiableNodes.add(node);
+                    }
+                }
             }
-            /*
-            We seek one node that is eligible for simplification.
-            A node is eligible for simplification if it has exactly 1 incoming edge and 1 outgoing edge (2 since it is bidirectional).
-             */
-            // A node is eligible for simplification if it has exactly 1 incoming edge and 1 outgoing edge
-            if (node.incomingEdges.size() == 2 && node.outgoingEdges.size() == 2) {
-                // This node is getting removed from the graph, so we need to get the edge that is incoming and outgoing to calculate the cost
-                List<Edge> incomingEdges = new ArrayList<>(node.incomingEdges.values());
-                List<Edge> outgoingEdges = new ArrayList<>(node.outgoingEdges.values());
-
-                Edge incomingEdge = incomingEdges.get(0);
-                Edge outgoingEdge = outgoingEdges.get(0);
-
-                if(incomingEdge.endNode1.equals(outgoingEdge.endNode2)){
-                    outgoingEdge = outgoingEdges.get(1); // We want to make sure we're not looking at the same neighbor
+            // Find boundary nodes (non-simplifiable nodes connected to simplifiable nodes)
+            List<Node> boundaryNodes = new ArrayList<>();
+            for (Node node : nodes.values()) {
+                if (!simplifiableNodes.contains(node)) {
+                    // Check if any outgoing edges lead to simplifiable nodes
+                    boolean hasSimplifiableConnection = node.outgoingEdges.values().stream()
+                        .anyMatch(e -> simplifiableNodes.contains(e.endNode2));
+                    
+                    if (hasSimplifiableConnection && node.nodeType != NodeType.PROSPECT && node.id != rootNode.id) {
+                        if (!boundaryNodes.contains(node)) {
+                            boundaryNodes.add(node);
+                        }
+                    }
                 }
-
-                // Combine the edges
-                int combinedCost = incomingEdge.cost + outgoingEdge.cost;
-
-                // Get neighbors
-                Node neighbor1 = incomingEdge.endNode1;
-                Node neighbor2 = outgoingEdge.endNode2;
-
-                // Remove edges in the outgoing/ incoming edges list of the neighbors
-                neighbor1.removeEdgesWithNode(node);
-                neighbor2.removeEdgesWithNode(node);
-
-                // Add new edge to both neighbors
-                // from neighbor1 to neighbor2
-                int id = newEdgeId++;
-                while(simplifiedEdges.get(id) != null){
-                    id = newEdgeId++;
-                }
-                Edge oneToTwo = new Edge(id, incomingEdge.edgeType, combinedCost, neighbor1, neighbor2, id);
-                oneToTwo.oldEdges.add(incomingEdge);
-                oneToTwo.oldEdges.add(outgoingEdge);
-
-                id = newEdgeId++;
-                while(simplifiedEdges.get(id) != null){
-                    id = newEdgeId++;
-                }
-                Edge twoToOne = new Edge(id, incomingEdge.edgeType, combinedCost, neighbor2, neighbor1, id);
-                twoToOne.oldEdges.add(incomingEdge);
-                twoToOne.oldEdges.add(outgoingEdge);
-
-                // Add the new edges to the neighbors
-                neighbor1.outgoingEdges.put(oneToTwo.id, oneToTwo);
-                neighbor1.incomingEdges.put(twoToOne.id, twoToOne);
-                neighbor2.outgoingEdges.put(twoToOne.id, twoToOne);
-                neighbor2.incomingEdges.put(oneToTwo.id, oneToTwo);
-
-                // Remove the edges from the simplified edges
-                for (Edge edge : node.incomingEdges.values()) {
-                    simplifiedEdges.remove(edge.id);
-                }
-                for (Edge edge : node.outgoingEdges.values()) {
-                    simplifiedEdges.remove(edge.id);
-                }
-                node.outgoingEdges.clear();
-                node.incomingEdges.clear();
-
-                visitedNodes.add(node.id);
             }
-        }
 
-        // print all edges where the endNode1 or endNode2 is in the visitedNodes set
-        for (Edge edge : simplifiedEdges.values()) {
-            if (visitedNodes.contains(edge.endNode1.id) || visitedNodes.contains(edge.endNode2.id)) {
-                System.out.println(edge);
+
+            
+            // For a boundary node, find path to another boundary node
+            
+            if (boundaryNodes.size() == 0) {
+                break;
             }
-        }
-
-        List<Node> nodesToRemove = new ArrayList<>();
-        for (Node node : nodes.values()) {
-            if (visitedNodes.contains(node.id)) {
-                nodesToRemove.add(node);
+            Node startNode = boundaryNodes.get(0);
+            Edge startEdge = null;
+            for (Edge edge : startNode.outgoingEdges.values()) {
+                if (simplifiableNodes.contains(edge.endNode2)) {
+                    startEdge = edge;
+                    break;
+                }
             }
-        }
-        for (Node node : nodesToRemove) {
-            nodes.remove(node.id);
-        }
+            if (startEdge == null) {
+                System.out.println("startEdge is null");
+                return;
+            }
+            Node currentNode = startEdge.endNode2;
+            List<Edge> pathEdges = new ArrayList<>();
+            pathEdges.add(startEdge);
 
-        System.out.println("Number of edges after simplification: " + simplifiedEdges.size());
-        System.out.println("Number of nodes after simplification: " + nodes.size());
+            
+            // Follow the path until we reach a non-simplifiable node
+            while (simplifiableNodes.contains(currentNode)) {
+                Edge nextEdge = currentNode.outgoingEdges.values().stream()
+                    .filter(e -> e.endNode2.id != pathEdges.get(pathEdges.size() - 1).endNode1.id)
+                    .findFirst()
+                    .get();
+                pathEdges.add(nextEdge);
+                currentNode = nextEdge.endNode2;
+            }
 
-        this.edges = simplifiedEdges;
+            // pad van langer dan 1 gevonden
+            if (pathEdges.size() > 1) {
+                // Create new simplified edges (bidirectional)
+                int totalCost = pathEdges.stream()
+                    .mapToInt(e -> e.cost)
+                    .sum();
 
-        String file = "bretigny_62p_1147n_1235e.json";
-        OutputWriter writer = new OutputWriter(new Graph(this.nodes, this.edges));
-        writer.write("output/output_" + file, 10.0);
-        // exit program
-        System.exit(0);
+                int newID =  edges.values().stream().mapToInt(edge -> edge.id).max().orElse(0) + 1;
+                Edge newEdge1 = new Edge(
+                    newID+1,
+                    EdgeType.REGULAR,
+                    totalCost,
+                    startNode,
+                    currentNode,
+                    newID+1
+                );
+                newEdge1.oldEdges.addAll(pathEdges);
+                // Remove old edges and add new one
+                for (Edge oldEdge : pathEdges) {
+                    if (!simplifiedEdges.containsKey(oldEdge.id)) {
+                        System.out.println("oldEdge not in simplifiedEdges: " + oldEdge.id);
+                    }
+                    simplifiedEdges.remove(oldEdge.id);
+                }
+                simplifiedEdges.put(newEdge1.id, newEdge1);
+
+
+
+
+
+                Edge newEdge2 = new Edge(
+                    newID+2,
+                    EdgeType.REGULAR,
+                    totalCost,
+                    currentNode,
+                    startNode,
+                    newID+2
+                );
+                List<Edge> oldEdges = new ArrayList<>();
+                for (Edge oldEdge : pathEdges) {
+                    Edge oldEdgeReverse = simplifiedEdges.values().stream()
+                        .filter(e -> e.endNode1.id == oldEdge.endNode2.id && e.endNode2.id == oldEdge.endNode1.id)
+                        .findFirst()
+                        .orElse(null);
+                    if (oldEdgeReverse == null) {
+                        System.out.println("oldEdgeReverse not found: " + oldEdge.id);
+                    }
+                    oldEdges.add(oldEdgeReverse);
+                    simplifiedEdges.remove(oldEdgeReverse.id);
+                }
+                newEdge2.oldEdges.addAll(oldEdges);
+                simplifiedEdges.put(newEdge2.id, newEdge2);
+
+                changes = true;
+            }
+
+            if (changes) {
+                // Update the edges map with simplified edges
+                edges = simplifiedEdges;
+                // Update node connections
+                for (Node node : nodes.values()) {
+                    node.outgoingEdges.clear();
+                    node.incomingEdges.clear();
+                }
+                // Rebuild node connections with new edges
+                for (Edge edge : edges.values()) {
+                    if (edge.endNode1 != edge.endNode2) {   
+                        edge.endNode1.outgoingEdges.put(edge.id, edge);
+                        edge.endNode2.incomingEdges.put(edge.id, edge);
+                    }
+                }
+            }
+
+        } while (changes); // Continue until no more simplifications can be made
+
+        
+
+        System.out.println("Simplification complete.");
     }
-
     public void shave(){
 
     }
