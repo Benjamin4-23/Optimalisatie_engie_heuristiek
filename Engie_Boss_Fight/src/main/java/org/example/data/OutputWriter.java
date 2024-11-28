@@ -17,7 +17,7 @@ public class OutputWriter {
         // Prepare JSON buffer
         StringBuilder jsonBuffer = new StringBuilder();
 
-        jsonBuffer.append(String.format("{\"objective_value\":%.4f,", objectiveValue));
+        jsonBuffer.append(String.format("{\"objective_value\":%.4f", objectiveValue).replace(",", ".")+",");
         jsonBuffer.append("\"edges\": [");
 
         // Write used edges to buffer
