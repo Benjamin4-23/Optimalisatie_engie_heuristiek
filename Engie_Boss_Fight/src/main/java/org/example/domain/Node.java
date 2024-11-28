@@ -1,9 +1,7 @@
 package org.example.domain;
 
+import java.util.*;
 import java.util.HashMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Node {
     public int id;
@@ -14,8 +12,12 @@ public class Node {
     public HashMap<Integer, Edge> outgoingEdges = new HashMap<>();
     public HashMap<Integer, Edge> incomingEdges = new HashMap<>();
 
-    public Node() {
 
+    public Node(int id, double x, double y, NodeType nodeType) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.nodeType = nodeType;
     }
 
     public Node(Node node) {
@@ -25,6 +27,28 @@ public class Node {
         this.nodeType = node.nodeType;
         this.outgoingEdges = new HashMap<>(node.outgoingEdges);
         this.incomingEdges = new HashMap<>(node.incomingEdges);
+    }
+
+    public void removeEdgesWithNode(Node node) {
+        List<Integer> outgoingToRemove = new ArrayList<>();
+        for (Edge edge : outgoingEdges.values()) {
+            if (edge.endNode2 == node) {
+                outgoingToRemove.add(edge.id);
+            }
+        }
+        for (int id : outgoingToRemove) {
+            outgoingEdges.remove(id);
+        }
+
+        List<Integer> incomingToRemove = new ArrayList<>();
+        for (Edge edge : incomingEdges.values()) {
+            if (edge.endNode1 == node) {
+                incomingToRemove.add(edge.id);
+            }
+        }
+        for (int id : incomingToRemove) {
+            incomingEdges.remove(id);
+        }
     }
 
     public boolean isConnected() {
@@ -52,12 +76,9 @@ public class Node {
         return false;
     }
 
-    public Node(int id, double x, double y, NodeType nodeType) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.nodeType = nodeType;
+    @Override
+    public String toString() {
+        return "id: " + id + ", x: " + x + ", y: " + y + ", nodeType: " + nodeType + ", outgoingEdges: " + outgoingEdges.size() + ", incomingEdges: " + incomingEdges.size();
     }
-
-    // Getters and setters can be added here if needed
+// Getters and setters can be added here if needed
 }

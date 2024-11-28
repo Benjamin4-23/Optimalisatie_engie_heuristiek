@@ -12,9 +12,9 @@ import java.io.InputStreamReader;
 
 public class Validator {
     public static void main(String args[]) throws Exception {
-        for (File file: new File("./data").listFiles()) {
+        for (File file: new File("data").listFiles()) {
             System.out.println("\u001B[34mStart running "+file.getName()+"\u001B[0m");
-            String outputfile = "./output/output_"+file.getName();
+            String outputfile = "output/output_"+file.getName();
 
             Main.main(new String[]{file.getPath(), outputfile});
 

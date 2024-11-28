@@ -48,7 +48,7 @@ public class Edge {
 
     @Override
     public String toString() {
-        return String.format("Edge_%d_%d", endNode1.id, endNode2.id);
+        return String.format("Edge: %d-%d", endNode1.id, endNode2.id);
     }
 
     // Getters and setters can be added here if needed
