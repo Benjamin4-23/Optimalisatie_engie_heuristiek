@@ -188,11 +188,30 @@ def read_output(filepath) -> list[ConnectionPoint]:
         data = json.load(f)["edges"]
     return [ConnectionPoint(*edgeConnMap[edge]) for edge in data]
 
+def read_node_output(filepath) -> list[ConnectionPoint]:
+    with open(filepath, 'r') as f:
+        data = json.load(f)["nodes"]
+        connections = []
+        for node in data:
+            if len(node) < 2:
+                raise "No list of node id's given!"
+
+            if len(node) == 2:
+                src_x, src_y = nodeMap[node[0]].get_coords()
+                dest_x, dest_y = nodeMap[node[1]].get_coords()
+                connections.append(ConnectionPoint(src_x, src_y, dest_x, dest_y))
+            elif len(node) > 2:
+                for i in range(len(node)-1):
+                    src_x, src_y = nodeMap[node[i]].get_coords()
+                    dest_x, dest_y = nodeMap[node[i+1]].get_coords()
+                    connections.append(ConnectionPoint(src_x, src_y, dest_x, dest_y))
+    return connections
+
 
 if __name__ == "__main__":
     file = "bretigny_62p_1147n_1235e.json"
     map = Map("../data/" + file)
-    real_edges = read_output("../output/output_" + file)
+    # real_edges = read_output("../output/output_" + file)
+    real_edges = read_node_output("../output/output_" + file)
     map.add_layer("Dijkstra", MAP_COLORS.GREEN, real_edges)
-    map.add_layer("Dijkstra_2", MAP_COLORS.MAGENTA, real_edges)
     map.visualize()
