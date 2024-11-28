@@ -18,9 +18,9 @@ public class SteepestDescent extends SearchAlgorithm {
     private double currentResult;
     private double bestResult;
 
-    public SteepestDescent(File file) {
+    public SteepestDescent(String path) {
         this.function = new MyObjectiveFunction();
-        this.currentSolution = new MySolution(file);
+        this.currentSolution = new MySolution(path);
         this.bestSolution = this.currentSolution;
         this.bestResult = this.function.evaluate(this.bestSolution, null);
         System.out.println("bestResult " + bestResult);

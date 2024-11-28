@@ -13,8 +13,8 @@ public class Main {
     public static void main(String[] args) {
         if (args.length == 2) {
             // via validator
-            File inputFile = new File(args[0]);
-            SearchAlgorithm steepestDescent = new SteepestDescent(inputFile);
+            String path = args[0];
+            SearchAlgorithm steepestDescent = new SteepestDescent(path);
             //steepestDescent.execute(150);
             MySolution bestSolution = (MySolution) steepestDescent.getBestSolution();
             OutputWriter writer = new OutputWriter(bestSolution.getGraph());
@@ -23,10 +23,11 @@ public class Main {
         }
 
         //normal run
-        SearchAlgorithm steepestDescent = new SteepestDescent(new File("./data/bagnolet_353p_3844n_4221e.json"));
+        String file = "bretigny_62p_1147n_1235e.json";
+        SearchAlgorithm steepestDescent = new SteepestDescent("data/" + file);
         //steepestDescent.execute(150);
         MySolution bestSolution = (MySolution) steepestDescent.getBestSolution();
         OutputWriter writer = new OutputWriter(bestSolution.getGraph());
-        writer.write("output/output_bagnolet_353p_3844n_4221e.json", bestSolution.getObjectiveValue());
+        writer.write("output/output_" + file, bestSolution.getObjectiveValue());
     }
 }

@@ -190,8 +190,9 @@ def read_output(filepath) -> list[ConnectionPoint]:
 
 
 if __name__ == "__main__":
-    map = Map("../data/bretigny_62p_1147n_1235e.json")
-    real_edges = read_output("../output/graph_data.json")
+    file = "bretigny_62p_1147n_1235e.json"
+    map = Map("../data/" + file)
+    real_edges = read_output("../output/output_" + file)
     map.add_layer("Dijkstra", MAP_COLORS.GREEN, real_edges)
     map.add_layer("Dijkstra_2", MAP_COLORS.MAGENTA, real_edges)
     map.visualize()

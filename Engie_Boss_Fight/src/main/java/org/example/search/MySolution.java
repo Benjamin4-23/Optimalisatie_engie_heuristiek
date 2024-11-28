@@ -14,9 +14,9 @@ import org.example.search.framework.Solution;
 public class MySolution implements Solution {
     private Graph graph;
     private double cost;
-    public MySolution(File file) {
-        assert Files.exists(Path.of(file.getPath()));
-        DataReader reader = new DataReader(file.getPath());
+    public MySolution(String path) {
+        assert Files.exists(Path.of(path));
+        DataReader reader = new DataReader(path);
         reader.loadData();
         reader.transform();
         reader.simplify();
@@ -52,7 +52,7 @@ public class MySolution implements Solution {
         // Generate a random solution
         // We will start on the existing network, connect all prospects
         // We'll use dijkstra to find the shortest path between all prospects
-        Map<Node, Double> test = graph.dijkstraFromRootToProspects();
+        graph.dijkstraFromRootToProspects();
 
     }
     public Graph getGraph() {
