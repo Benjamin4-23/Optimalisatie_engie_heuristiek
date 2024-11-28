@@ -9,6 +9,7 @@ import org.example.domain.Graph;
 
 public class OutputWriter {
     private Graph graph;
+
     public OutputWriter(Graph graph) {
         this.graph = graph;
     }
@@ -17,8 +18,8 @@ public class OutputWriter {
         // Prepare JSON buffer
         StringBuilder jsonBuffer = new StringBuilder();
 
-        jsonBuffer.append(String.format("{\"objective_value\":%.4f", objectiveValue).replace(",", ".")+",");
-        jsonBuffer.append("\"edges\": [");
+        jsonBuffer.append(String.format("{\n\t\"objective_value\":%.4f", objectiveValue).replace(",", ".") + ",");
+        jsonBuffer.append("\n\t\"edges\": [");
 
         // Write used edges to buffer
         for (Edge edge : this.graph.edges.values()) {
@@ -29,7 +30,17 @@ public class OutputWriter {
         if (!this.graph.edges.isEmpty()) {
             jsonBuffer.setLength(jsonBuffer.length() - 1); // Remove last comma
         }
-        jsonBuffer.append("]}");
+        jsonBuffer.append("],\n\t\"nodes\": [");
+        // Write used edges to buffer
+        for (Edge edge : this.graph.edges.values()) {
+            if (/*edge.isUsed && */edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
+                jsonBuffer.append(String.format("[%.4f,%.4f,%.4f,%.4f],", edge.endNode1.x, edge.endNode1.y, edge.endNode2.x, edge.endNode2.y));
+            }
+        }
+        if (!this.graph.edges.isEmpty()) {
+            jsonBuffer.setLength(jsonBuffer.length() - 1); // Remove last comma
+        }
+        jsonBuffer.append("]\n}");
 
         // Write buffer to JSON file
         try {
@@ -39,3 +50,4 @@ public class OutputWriter {
         }
     }
 }
+
