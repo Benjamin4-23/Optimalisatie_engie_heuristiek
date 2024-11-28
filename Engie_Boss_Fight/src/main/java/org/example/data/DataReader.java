@@ -232,7 +232,8 @@ public class DataReader {
         String file = "bretigny_62p_1147n_1235e.json";
         OutputWriter writer = new OutputWriter(new Graph(this.nodes, this.edges));
         writer.write("output/output_" + file, 10.0);
-
+        // exit program
+        System.exit(0);
     }
 
     public void shave(){
