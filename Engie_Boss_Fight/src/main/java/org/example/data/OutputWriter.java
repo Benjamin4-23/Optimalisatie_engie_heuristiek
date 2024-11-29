@@ -23,8 +23,14 @@ public class OutputWriter {
 
         // Write used edges to buffer
         for (Edge edge : this.graph.edges.values()) {
-            if (/*edge.isUsed && */edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
-                jsonBuffer.append(String.format("%d,", edge.originalID));
+            if (edge.isUsed && edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
+                if(!edge.oldEdges.isEmpty()){
+                    for (Edge e : edge.oldEdges) {
+                        jsonBuffer.append(String.format("%d,", e.originalID));
+                    }
+                } else {
+                    jsonBuffer.append(String.format("%d,", edge.originalID));
+                }
             }
         }
         if (!this.graph.edges.isEmpty()) {
