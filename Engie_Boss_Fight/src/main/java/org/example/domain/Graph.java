@@ -8,7 +8,6 @@ import java.util.*;
 public class Graph {
     public HashMap<Integer, Node> nodes;
     public HashMap<Integer, Edge> edges;
-    public Node rootNode;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.nodes = nodes;

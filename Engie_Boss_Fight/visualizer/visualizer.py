@@ -233,7 +233,8 @@ def read_node_output(filepath) -> list[ConnectionPoint]:
 if __name__ == "__main__":
     file = "bretigny_62p_1147n_1235e.json"
     map = Map("../data/" + file, debug=True)
-    # real_edges = read_output("../output/output_" + file)
-    real_edges = read_node_output("../output/output_" + file)
-    map.add_layer("Dijkstra", MAP_COLORS.GREEN, real_edges, 0)
+    real_edges = read_output("../output/output_" + file)
+    node_edges = read_node_output("../output/output_" + file)
+    map.add_layer("Real", MAP_COLORS.GREEN, real_edges, 0)
+    map.add_layer("Simple", MAP_COLORS.PINK, node_edges, 1)
     map.visualize()

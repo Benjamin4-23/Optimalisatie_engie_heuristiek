@@ -39,7 +39,7 @@ public class OutputWriter {
         jsonBuffer.append("],\n\t\"nodes\": [");
         // Write used edges to buffer
         for (Edge edge : this.graph.edges.values()) {
-            if (/*edge.isUsed && */edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
+            if (edge.isUsed && edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
                 jsonBuffer.append(String.format("[%d,%d],", edge.endNode1.id, edge.endNode2.id));
             }
         }

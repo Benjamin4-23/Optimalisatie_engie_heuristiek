@@ -27,6 +27,14 @@ public class DataReader {
     private Set<Node> existingNodes = new HashSet<>();
     private Node rootNode;
 
+
+    private HashMap<Integer, Node> originalNodes = new HashMap<>();
+    private HashMap<Integer, Edge> originalEdges = new HashMap<>();
+    private HashMap<Integer, Node> simplifiedNodes = new HashMap<>();
+    private HashMap<Integer, Edge> simplifiedEdges = new HashMap<>();
+    private HashMap<Integer, Node> shavedNodes = new HashMap<>();
+    private HashMap<Integer, Edge> shavedEdges = new HashMap<>();
+
     // Constructor
     public DataReader(String filepath) {
         this.filepath = filepath;
@@ -137,6 +145,8 @@ public class DataReader {
                 }
             }
         }
+        this.originalNodes = new HashMap<>(nodes);
+        this.originalEdges = new HashMap<>(edges);
     }
 
     public void simplify() {
@@ -289,6 +299,8 @@ public class DataReader {
         } while (changes); // Continue until no more simplifications can be made
 
         System.out.println("Number of nodes - edges after simplification: " + nodes.size() + " - " + edges.size());
+        this.simplifiedNodes = new HashMap<>(nodes);
+        this.simplifiedEdges = new HashMap<>(edges);
     }
 
     /*public void simplify() {
@@ -303,7 +315,7 @@ public class DataReader {
 
         for (Node node : nodes.values()) {
             // Skip nodes that are already visited or are not eligible for simplification
-            if (visitedNodes.contains(node.id) || node.id == rootNode.id) {
+             if (visitedNodes.contains(node.id) || node.id == rootNode.id) {
                 continue;
             }
 
@@ -320,7 +332,13 @@ public class DataReader {
                         .findFirst()
                         .orElse(null);
 
-                if (outgoingEdge == null) {
+                Edge incomingEdge2 = incomingEdges.get(1);
+                Edge outgoingEdge2 = outgoingEdges.stream()
+                        .filter(e -> !incomingEdge2.endNode1.equals(e.endNode2))
+                        .findFirst()
+                        .orElse(null);
+
+                if (outgoingEdge == null || outgoingEdge2 == null) {
                     continue; // Skip this node if no distinct neighbor is found
                 }
 
@@ -340,19 +358,30 @@ public class DataReader {
                     id = newEdgeId++;
                 }
                 Edge oneToTwo = new Edge(id, EdgeType.REGULAR, combinedCost, neighbor1, neighbor2, id);
-                oneToTwo.oldEdges.add(incomingEdge);
-                oneToTwo.oldEdges.add(outgoingEdge);
-                oneToTwo.oldEdges.addAll(incomingEdge.oldEdges);
-                oneToTwo.oldEdges.addAll(outgoingEdge.oldEdges);
+                if(Math.abs(incomingEdge.endNode1.id - incomingEdge.endNode2.id) == 1) {
+                    oneToTwo.oldEdges.add(incomingEdge);
+                }
+                if (Math.abs(outgoingEdge.endNode2.id - outgoingEdge.endNode1.id) == 1) {
+                    oneToTwo.oldEdges.add(outgoingEdge);
+                }
+
+                oneToTwo.oldEdges.addAll(getOldEdges(incomingEdge.oldEdges));
+                oneToTwo.oldEdges.addAll(getOldEdges(outgoingEdge.oldEdges));
+
                 id = newEdgeId++;
                 while (simplifiedEdges.get(id) != null) {
                     id = newEdgeId++;
                 }
                 Edge twoToOne = new Edge(id, EdgeType.REGULAR, combinedCost, neighbor2, neighbor1, id);
-                twoToOne.oldEdges.add(incomingEdge);
-                twoToOne.oldEdges.add(outgoingEdge);
-                twoToOne.oldEdges.addAll(incomingEdge.oldEdges);
-                twoToOne.oldEdges.addAll(outgoingEdge.oldEdges);
+                if(Math.abs(incomingEdge2.endNode1.id - incomingEdge2.endNode2.id) == 1) {
+                    twoToOne.oldEdges.add(incomingEdge2);
+                }
+                if (Math.abs(outgoingEdge2.endNode2.id - outgoingEdge2.endNode1.id) == 1) {
+                    twoToOne.oldEdges.add(outgoingEdge2);
+                }
+
+                twoToOne.oldEdges.addAll(incomingEdge2.oldEdges);
+                twoToOne.oldEdges.addAll(outgoingEdge2.oldEdges);
 
                 // Add the new edges to the neighbors
                 neighbor1.outgoingEdges.put(oneToTwo.id, oneToTwo);
@@ -379,6 +408,21 @@ public class DataReader {
         }
         this.edges = simplifiedEdges;
         System.out.println("Number of nodes - edges after simplification: " + nodes.size() + " - " + edges.size());
+        this.simplifiedNodes = new HashMap<>(nodes);
+        this.simplifiedEdges = new HashMap<>(edges);
+    }
+
+    private List<Edge> getOldEdges(List<Edge> edges) {
+        List<Edge> oldEdges = new ArrayList<>();
+        for(Edge e : edges) {
+            if(e.oldEdges.isEmpty()) {
+                oldEdges.add(e);
+            } else{
+                oldEdges.addAll(getOldEdges(e.oldEdges));
+                break;
+            }
+        }
+        return oldEdges;
     }*/
 
 
@@ -423,5 +467,7 @@ public class DataReader {
         this.edges = simplifiedEdges;
 
         System.out.println("Number of nodes - edges after shaving: " + nodes.size() + " - " + edges.size());
+        this.shavedNodes = new HashMap<>(nodes);
+        this.shavedEdges = new HashMap<>(edges);
     }
 }
