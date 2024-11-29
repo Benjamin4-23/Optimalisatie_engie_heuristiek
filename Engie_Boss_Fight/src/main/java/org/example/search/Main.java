@@ -1,13 +1,8 @@
 package org.example.search;
 
-import org.example.data.DataReader;
 import org.example.data.OutputWriter;
 import org.example.search.framework.SearchAlgorithm;
 import org.example.search.hillclimbing.SteepestDescent;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) {

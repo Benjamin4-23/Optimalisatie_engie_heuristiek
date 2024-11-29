@@ -20,6 +20,7 @@ public class MySolution implements Solution {
         reader.loadData();
         reader.transform();
         reader.simplify();
+        reader.shave();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
         GenerateSolution();
     }
