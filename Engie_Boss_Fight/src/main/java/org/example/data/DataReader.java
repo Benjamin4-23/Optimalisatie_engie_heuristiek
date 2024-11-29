@@ -237,7 +237,7 @@ public class DataReader {
                 int newID =  edges.values().stream().mapToInt(edge -> edge.id).max().orElse(0) + 1;
                 Edge newEdge1 = new Edge(
                     newID+1,
-                    EdgeType.EXISTING,
+                    EdgeType.REGULAR,
                     totalCost,
                     startNode,
                     currentNode,
