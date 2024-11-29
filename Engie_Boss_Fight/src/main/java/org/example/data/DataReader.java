@@ -23,6 +23,7 @@ public class DataReader {
     private String filepath;
     private HashMap<Integer, Node> nodes;
     private HashMap<Integer, Edge> edges;
+    private HashMap<Integer, Edge> loopEdges;
     private Set<Node> existingNodes = new HashSet<>();
     private Node rootNode;
 
@@ -31,6 +32,7 @@ public class DataReader {
         this.filepath = filepath;
         this.nodes = new HashMap<>();
         this.edges = new HashMap<>();
+        this.loopEdges = new HashMap<>();
     }
 
     public HashMap<Integer, Node> getNodes() {
@@ -39,6 +41,10 @@ public class DataReader {
 
     public HashMap<Integer, Edge> getEdges() {
         return edges;
+    }
+
+    public HashMap<Integer, Edge> getLoopEdges() {
+        return loopEdges;
     }
 
     // Load and parse data from JSON file
@@ -136,11 +142,20 @@ public class DataReader {
 
 
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public void simplify() {
         HashMap<Integer, Edge> simplifiedEdges = new HashMap<>(edges);
         boolean changes;
-
-        
         do {
             changes = false;
             // Find nodes with exactly 2 connections (4 edges due to bidirectional)
@@ -180,9 +195,6 @@ public class DataReader {
                     }
                 }
             }
-
-
-            
             // For a boundary node, find path to another boundary node
             
             if (boundaryNodes.size() == 0) {
@@ -225,7 +237,7 @@ public class DataReader {
                 int newID =  edges.values().stream().mapToInt(edge -> edge.id).max().orElse(0) + 1;
                 Edge newEdge1 = new Edge(
                     newID+1,
-                    EdgeType.REGULAR,
+                    EdgeType.EXISTING,
                     totalCost,
                     startNode,
                     currentNode,
@@ -240,10 +252,6 @@ public class DataReader {
                     simplifiedEdges.remove(oldEdge.id);
                 }
                 simplifiedEdges.put(newEdge1.id, newEdge1);
-
-
-
-
 
                 Edge newEdge2 = new Edge(
                     newID+2,
@@ -285,15 +293,19 @@ public class DataReader {
                         edge.endNode1.outgoingEdges.put(edge.id, edge);
                         edge.endNode2.incomingEdges.put(edge.id, edge);
                     }
+                    else {
+                        loopEdges.put(edge.id, edge);
+                    }
                 }
             }
-
         } while (changes); // Continue until no more simplifications can be made
-
-        
-
-        System.out.println("Simplification complete.");
     }
+
+
+
+
+
+
     public void shave(){
 
     }
