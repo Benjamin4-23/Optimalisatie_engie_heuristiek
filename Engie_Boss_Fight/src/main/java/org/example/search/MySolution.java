@@ -19,8 +19,8 @@ public class MySolution implements Solution {
         DataReader reader = new DataReader(path);
         reader.loadData();
         reader.transform();
-        reader.simplify();
         reader.shave();
+        reader.simplify();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
         GenerateSolution();
     }

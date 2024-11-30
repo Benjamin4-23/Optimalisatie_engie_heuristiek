@@ -427,6 +427,7 @@ public class DataReader {
 
 
     public void shave(){
+        System.out.println("Number of nodes - edges before shaving: " + nodes.size() + " - " + edges.size());
         HashMap<Integer, Edge> simplifiedEdges = new HashMap<>(edges);
         int numberOfEdgesRemoved;
         do {

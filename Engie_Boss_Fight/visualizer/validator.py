@@ -141,8 +141,8 @@ if __name__ == "__main__":
 
     if len(sys.argv) != 3:
         #print("Gebruik: python validator.py <input_file> <solution_file>")
-        file = "bagnolet_2081p_18464n_20478e.json"
-        validate(f"../data/{file}", f"./output/output_{file}")
+        file = "bretigny_62p_1147n_1235e.json"
+        validate(f"../data/{file}", f"../output/output_{file}")
     else:
         print("Oplossing in bestand %s wordt gevalideerd..." % sys.argv[2])
         validate(sys.argv[1], sys.argv[2])
