@@ -18,11 +18,10 @@ public class OutputWriter {
     private StringBuilder jsonBuffer;
     private double objectiveValue;
 
-    public OutputWriter(MySolution solution) {
+    public OutputWriter(Graph graph, double objectiveValue) {
         // dijkstra
-        this.graph = solution.getGraph();
-        this.reader = solution.reader;
-        this.objectiveValue = solution.getObjectiveValue();
+        this.graph = graph;
+        this.objectiveValue = objectiveValue;
         jsonBuffer = new StringBuilder();
     }
 
@@ -43,12 +42,22 @@ public class OutputWriter {
             }
         }
         if (!this.graph.edges.isEmpty()) {
-            jsonBuffer.setLength(jsonBuffer.length() - 1); // Remove last comma
+            jsonBuffer.setLength(jsonBuffer.length() - 1);
+        }
+        jsonBuffer.append("],\"nodes\":[");
+        // Write used edges to buffer
+        for (Edge edge : this.graph.edges.values()) {
+            if (edge.isUsed && edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
+                jsonBuffer.append(String.format("[%d,%d],", edge.endNode1.id, edge.endNode2.id));
+            }
+        }
+        if (!this.graph.edges.isEmpty()) {
+            jsonBuffer.setLength(jsonBuffer.length() - 1);
         }
         jsonBuffer.append("],");
 
-        addField("simplify", reader.simplifiedNodes.values(), reader.simplifiedEdges.values());
-        addField("shave", reader.shavedNodes.values(), reader.shavedEdges.values());
+        /*addField("simplify", reader.simplifiedNodes.values(), reader.simplifiedEdges.values());
+        addField("shave", reader.shavedNodes.values(), reader.shavedEdges.values());*/
 
         jsonBuffer.setLength(jsonBuffer.length() - 1);
         jsonBuffer.append("}");

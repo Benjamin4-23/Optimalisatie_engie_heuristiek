@@ -12,7 +12,7 @@ public class Main {
             SearchAlgorithm steepestDescent = new SteepestDescent(path);
             //steepestDescent.execute(150);
             MySolution bestSolution = (MySolution) steepestDescent.getBestSolution();
-            OutputWriter writer = new OutputWriter(bestSolution);
+            OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
             writer.write(args[1]);
             return;
         }
@@ -22,7 +22,7 @@ public class Main {
         SearchAlgorithm steepestDescent = new SteepestDescent("data/" + file);
         //steepestDescent.execute(150);
         MySolution bestSolution = (MySolution) steepestDescent.getBestSolution();
-        OutputWriter writer = new OutputWriter(bestSolution);
+        OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
         writer.write("output/output_" + file);
     }
 }

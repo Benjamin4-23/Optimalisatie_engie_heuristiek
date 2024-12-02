@@ -9,8 +9,7 @@ public class Node {
     public double y;
     public NodeType nodeType;
 
-    public HashMap<Integer, Edge> outgoingEdges = new HashMap<>();
-    public HashMap<Integer, Edge> incomingEdges = new HashMap<>();
+    public HashMap<Integer, Edge> edges = new HashMap<>();
 
 
     public Node(int id, double x, double y, NodeType nodeType) {
@@ -25,60 +24,26 @@ public class Node {
         this.x = node.x;
         this.y = node.y;
         this.nodeType = node.nodeType;
-        this.outgoingEdges = new HashMap<>(node.outgoingEdges);
-        this.incomingEdges = new HashMap<>(node.incomingEdges);
+        this.edges = new HashMap<>(node.edges);
     }
 
-    public void removeEdgesWithNode(Node node) {
-        List<Integer> outgoingToRemove = new ArrayList<>();
-        for (Edge edge : outgoingEdges.values()) {
-            if (edge.endNode2 == node) {
-                outgoingToRemove.add(edge.id);
+    public void removeEdgeWithNode(Node node) {
+        Edge delete = null;
+        for (Edge edge : this.edges.values()){
+            if(edge.endNode1.id == node.id || edge.endNode2.id == node.id){
+                delete = edge;
             }
         }
-        for (int id : outgoingToRemove) {
-            outgoingEdges.remove(id);
+        if(delete != null){
+            this.edges.remove(delete.id);
+            return;
         }
-
-        List<Integer> incomingToRemove = new ArrayList<>();
-        for (Edge edge : incomingEdges.values()) {
-            if (edge.endNode1 == node) {
-                incomingToRemove.add(edge.id);
-            }
-        }
-        for (int id : incomingToRemove) {
-            incomingEdges.remove(id);
-        }
-    }
-
-    public boolean isConnected() {
-        if (this.nodeType == NodeType.PROSPECT) {
-            // check if there are incoming edges that are active
-            for (Edge edge : incomingEdges.values()) {
-                {
-                    if (edge.isUsed) {
-                        return true;
-                    }
-                }
-            }
-        } else {
-            for (Edge edge : incomingEdges.values()) {
-                if (edge.isUsed) {
-                    return true;
-                }
-            }
-            for (Edge edge : outgoingEdges.values()) {
-                if (edge.isUsed) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        throw new RuntimeException("Edge niet gevonden man, doing strange shit here");
     }
 
     @Override
     public String toString() {
-        return "id: " + id + ", x: " + x + ", y: " + y + ", nodeType: " + nodeType + ", outgoingEdges: " + outgoingEdges.size() + ", incomingEdges: " + incomingEdges.size();
+        return "id: " + this.id + ", x: " + this.x + ", y: " + this.y + ", nodeType: " + this.nodeType + ", edges: " + this.edges.size();
     }
 // Getters and setters can be added here if needed
 }

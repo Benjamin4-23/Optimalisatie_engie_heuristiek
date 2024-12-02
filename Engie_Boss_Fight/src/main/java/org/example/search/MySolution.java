@@ -19,10 +19,10 @@ public class MySolution implements Solution {
         assert Files.exists(Path.of(path));
         reader = new DataReader(path);
         reader.loadData();
-        reader.transform();
-        reader.shave();
-        reader.simplify();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
+        graph.transform();
+        graph.simplify();
+        graph.shave();
         GenerateSolution();
     }
     public MySolution(Graph g, double d){
@@ -51,10 +51,7 @@ public class MySolution implements Solution {
     }
 
     public void GenerateSolution() {
-        // Generate a random solution
-        // We will start on the existing network, connect all prospects
-        // We'll use dijkstra to find the shortest path between all prospects
-        graph.dijkstraFromRootToProspects();
+        graph.dijkstra();
 
     }
     public Graph getGraph() {
