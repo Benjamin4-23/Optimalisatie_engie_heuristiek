@@ -13,7 +13,7 @@ public class Main {
             //steepestDescent.execute(150);
             MySolution bestSolution = (MySolution) steepestDescent.getBestSolution();
             OutputWriter writer = new OutputWriter(bestSolution);
-            writer.write(args[1], bestSolution.getObjectiveValue());
+            writer.write(args[1]);
             return;
         }
 
@@ -23,6 +23,6 @@ public class Main {
         //steepestDescent.execute(150);
         MySolution bestSolution = (MySolution) steepestDescent.getBestSolution();
         OutputWriter writer = new OutputWriter(bestSolution);
-        writer.write("output/output_" + file, bestSolution.getObjectiveValue());
+        writer.write("output/output_" + file);
     }
 }
