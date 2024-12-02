@@ -181,8 +181,10 @@ public class Graph {
                 while (previousEdges.containsKey(pathNode)){
                     Edge pathEdge = previousEdges.get(pathNode);
                     pathEdge.cost = 0;
-                    pathNode = pathEdge.endNode1;
                     pathEdge.Use();
+                    System.out.println("Marking edge as used: " + pathEdge);
+                    // Move to the previous node
+                    pathNode = (pathEdge.endNode1 == pathNode) ? pathEdge.endNode2 : pathEdge.endNode1;
                 }
             }
         }
