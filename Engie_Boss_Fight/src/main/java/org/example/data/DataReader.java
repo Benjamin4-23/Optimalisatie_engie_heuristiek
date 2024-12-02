@@ -28,12 +28,12 @@ public class DataReader {
     private Node rootNode;
 
 
-    private HashMap<Integer, Node> originalNodes = new HashMap<>();
-    private HashMap<Integer, Edge> originalEdges = new HashMap<>();
-    private HashMap<Integer, Node> simplifiedNodes = new HashMap<>();
-    private HashMap<Integer, Edge> simplifiedEdges = new HashMap<>();
-    private HashMap<Integer, Node> shavedNodes = new HashMap<>();
-    private HashMap<Integer, Edge> shavedEdges = new HashMap<>();
+    public HashMap<Integer, Node> originalNodes = new HashMap<>();
+    public HashMap<Integer, Edge> originalEdges = new HashMap<>();
+    public HashMap<Integer, Node> simplifiedNodes = new HashMap<>();
+    public HashMap<Integer, Edge> simplifiedEdges = new HashMap<>();
+    public HashMap<Integer, Node> shavedNodes = new HashMap<>();
+    public HashMap<Integer, Edge> shavedEdges = new HashMap<>();
 
     // Constructor
     public DataReader(String filepath) {

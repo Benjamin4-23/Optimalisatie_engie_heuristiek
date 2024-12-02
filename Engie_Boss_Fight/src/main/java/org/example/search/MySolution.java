@@ -14,9 +14,10 @@ import org.example.search.framework.Solution;
 public class MySolution implements Solution {
     private Graph graph;
     private double cost;
+    public DataReader reader;
     public MySolution(String path) {
         assert Files.exists(Path.of(path));
-        DataReader reader = new DataReader(path);
+        reader = new DataReader(path);
         reader.loadData();
         reader.transform();
         reader.shave();

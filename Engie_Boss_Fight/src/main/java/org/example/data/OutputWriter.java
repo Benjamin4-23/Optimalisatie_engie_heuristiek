@@ -6,16 +6,22 @@ import java.nio.file.Paths;
 
 import org.example.domain.Edge;
 import org.example.domain.Graph;
+import org.example.search.MySolution;
+import org.example.search.framework.Solution;
 
 public class OutputWriter {
     private Graph graph;
+    private DataReader reader;
+    private StringBuilder jsonBuffer;
 
-    public OutputWriter(Graph graph) {
-        this.graph = graph;
+    public OutputWriter(MySolution solution) {
+        // dijkstra
+        this.graph = solution.getGraph();
+        this.reader = solution.reader;
+        jsonBuffer = new StringBuilder();
     }
 
     public void write(String fileName, double objectiveValue) {
-        // Prepare JSON buffer
         StringBuilder jsonBuffer = new StringBuilder();
 
         jsonBuffer.append(String.format("{\n\t\"objective_value\":%.4f", objectiveValue).replace(",", ".") + ",");
@@ -54,6 +60,10 @@ public class OutputWriter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void addField(){
+
     }
 }
 
