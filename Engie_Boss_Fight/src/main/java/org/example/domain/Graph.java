@@ -140,30 +140,31 @@ public class Graph {
     }
 
     public Map<Node, Double> dijkstra(){
-        Node startNode = nodes.get(-1);
+        Node rootNode = nodes.get(-1);
 
         Map<Integer, Double> distances = new HashMap<>();
-        Set<Integer> vistedNode = new HashSet<>();
         PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(a -> distances.getOrDefault(a, Double.POSITIVE_INFINITY)));
-        Map<Node,Edge> previousEdges = new HashMap<>();
+        Set<Integer> visitedNodes = new HashSet<>();
+        Map<Integer,Edge> previousEdges = new HashMap<>();
 
-        //setup
+        // Initialize distances
         for (Node node: nodes.values()){
             distances.put(node.id, Double.POSITIVE_INFINITY);
         }
-        distances.put(startNode.id, 0.0);
-        pq.add(startNode);
+        distances.put(rootNode.id, 0.0);
+        pq.add(rootNode);
 
         while (!pq.isEmpty()){
             Node currentNode = pq.poll();
 
-            if(vistedNode.contains(currentNode.id)) continue;
-            vistedNode.add(currentNode.id);
+            if(visitedNodes.contains(currentNode.id)) continue;
+            visitedNodes.add(currentNode.id);
+            //if (!visitedNodes.add(currentNode.id)) continue;
 
             for (Edge edge: currentNode.edges.values()){
-                Node neighbour = edge.endNode2;
+                Node neighbour = (edge.endNode1.id == currentNode.id) ? edge.endNode2 : edge.endNode1;
 
-                if(vistedNode.contains(neighbour.id)) continue;
+                if(visitedNodes.contains(neighbour.id)) continue;
 
                 double newCost = distances.get(currentNode.id) + edge.cost;
 
@@ -171,15 +172,15 @@ public class Graph {
                 if(newCost < distances.get(neighbour.id)){
                     distances.put(neighbour.id, newCost);
                     pq.add(neighbour);
-                    previousEdges.put(neighbour, edge);
+                    previousEdges.put(neighbour.id, edge);
                 }
             }
 
             // handle propects
             if(currentNode.nodeType == NodeType.PROSPECT){
                 Node pathNode = currentNode;
-                while (previousEdges.containsKey(pathNode)){
-                    Edge pathEdge = previousEdges.get(pathNode);
+                while (previousEdges.containsKey(pathNode.id)){
+                    Edge pathEdge = previousEdges.get(pathNode.id);
                     pathEdge.cost = 0;
                     pathEdge.use();
                     System.out.println("Marking edge as used: " + pathEdge);
