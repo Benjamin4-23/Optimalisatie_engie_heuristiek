@@ -173,10 +173,21 @@ public class Graph {
 
     private void clearNodes(){
         Set<Integer> visitedNodes = new HashSet<>();
+        Collection<Edge> edges = nodes.get(-1).edges.values();
+        List<Edge> removeEdges = new ArrayList<>();
         for (Node node : nodes.values()) {
             if (node.edges.isEmpty() && node.id != -1) {
                 visitedNodes.add(node.id);
+                for (Edge e: edges){
+                    if(e.endNode2 == node || e.endNode1 == node){
+                       removeEdges.add(e);
+                    }
+                }
             }
+        }
+
+        for (Edge e : removeEdges){
+            edges.remove(e);
         }
 
         for (Integer id : visitedNodes) {
