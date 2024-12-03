@@ -12,6 +12,10 @@ public class Graph {
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.nodes = nodes;
         this.edges = edges;
+        transform();
+        //simplify();
+        shave();
+        simplify();
     }
 
     public Graph(Graph other) {
@@ -32,14 +36,6 @@ public class Graph {
         int rootId = -1;
         Node rootNode = new Node(rootId, 0.0, 0.0, NodeType.REGULAR); // ID -1 for the virtual root
 
-        /*int i = edges.size();
-        for (Node node : nodes.values()) {
-            if (node.nodeType != NodeType.PROSPECT) {
-                Edge edgeFromRoot = new Edge(++i, EdgeType.EXISTING, 0, rootNode, node, -1);
-                rootNode.edges.put(i, edgeFromRoot);
-                //edges.put(edgeFromRoot.id, edgeFromRoot);
-            }
-        }*/
         int i = -1;
         Set<Integer> visitedNode = new HashSet<>();
         for (Edge edge: edges.values()){
@@ -71,8 +67,65 @@ public class Graph {
     }
 
     public void simplify() {
-        System.out.println("Number of nodes - edges before simplification: " + nodes.size() + " - " + edges.size());
+        System.out.println("Number of nodes - edges before simplification: " + nodes.size() + " - " + this.edges.size());
+        HashMap<Integer, Edge> simplifiedEdges = new HashMap<>(this.edges);
+        Set<Integer> visitedNodes = new HashSet<>();
 
+        int newEdgeId = edges.values().stream().mapToInt(edge -> edge.id).max().orElse(0);
+
+        for (Node node : nodes.values()) {
+            // Skip visited nodes or nodes that are not eligible for simplification
+            if (visitedNodes.contains(node.id) || node.id == -1 || node.nodeType == NodeType.PROSPECT) {
+                continue;
+            }
+
+            if (node.edges.size() == 2) { // One outgoing, one incoming? Merge them
+                List<Edge> edges = new ArrayList<>(node.edges.values());
+                Edge edge1 = edges.get(0);
+                Edge edge2 = edges.get(1);
+
+                // Get neighbors
+                Node neighbor1 = edge1.endNode1.id == node.id ? edge1.endNode2 : edge1.endNode1;
+                Node neighbor2 = edge2.endNode1.id == node.id ? edge2.endNode2 : edge2.endNode1;
+
+                // Create new edge
+                int combinedCost = edge1.cost + edge2.cost;
+                Edge newEdge = new Edge(++newEdgeId, EdgeType.REGULAR, combinedCost, neighbor1, neighbor2, -1);
+
+                if (edge1.oldEdges.isEmpty()) {
+                    newEdge.oldEdges.add(edge1);
+                } else {
+                    newEdge.oldEdges.addAll(edge1.oldEdges);
+                }
+
+                if (edge2.oldEdges.isEmpty()) {
+                    newEdge.oldEdges.add(edge2);
+                } else {
+                    newEdge.oldEdges.addAll(edge2.oldEdges);
+                }
+
+                simplifiedEdges.put(newEdge.id, newEdge);
+
+                // Update neighbors
+                neighbor1.removeEdgeWithNode(node);
+                neighbor1.edges.put(newEdge.id, newEdge);
+
+                neighbor2.removeEdgeWithNode(node);
+                neighbor2.edges.put(newEdge.id, newEdge);
+
+                // Remove edges from the graph
+                simplifiedEdges.remove(edge1.id);
+                simplifiedEdges.remove(edge2.id);
+
+                // Clear edges of the current node
+                node.edges.clear();
+
+                //visitedNodes.add(node.id);
+            }
+        }
+
+        this.edges = simplifiedEdges;
+        System.out.println("Number of nodes - edges after simplification: " + nodes.size() + " - " + this.edges.size());
     }
 
     public void shave(){
@@ -113,9 +166,23 @@ public class Graph {
 
         this.edges = simplifiedEdges;
 
+        //clearNodes();
+
         System.out.println("Number of nodes - edges after shaving: " + nodes.size() + " - " + edges.size());
     }
 
+    private void clearNodes(){
+        Set<Integer> visitedNodes = new HashSet<>();
+        for (Node node : nodes.values()) {
+            if (node.edges.isEmpty() && node.id != -1) {
+                visitedNodes.add(node.id);
+            }
+        }
+
+        for (Integer id : visitedNodes) {
+            nodes.remove(id);
+        }
+    }
 
     // Deep copy via clone method
     @Override
@@ -196,7 +263,7 @@ public class Graph {
                 while (previousEdges.containsKey(pathNode.id)){
                     Edge pathEdge = previousEdges.get(pathNode.id);
                     pathEdge.use();
-                    System.out.println("Marking edge as used: " + pathEdge);
+
                     // Move to the previous node
                     pathNode = (pathEdge.endNode1 == pathNode) ? pathEdge.endNode2 : pathEdge.endNode1;
                 }

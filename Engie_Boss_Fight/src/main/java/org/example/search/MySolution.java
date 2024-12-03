@@ -20,9 +20,6 @@ public class MySolution implements Solution {
         reader = new DataReader(path);
         reader.loadData();
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
-        graph.transform();
-        graph.simplify();
-        graph.shave();
         GenerateSolution();
     }
     public MySolution(Graph g, double d){
