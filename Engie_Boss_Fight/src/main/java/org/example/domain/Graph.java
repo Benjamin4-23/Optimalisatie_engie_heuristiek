@@ -166,7 +166,7 @@ public class Graph {
 
         this.edges = simplifiedEdges;
 
-        //clearNodes();
+        clearNodes();
 
         System.out.println("Number of nodes - edges after shaving: " + nodes.size() + " - " + edges.size());
     }

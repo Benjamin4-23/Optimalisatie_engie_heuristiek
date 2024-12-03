@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons
 from enum import Enum
 
-DOT_SIZE = 4
+DOT_SIZE = 3
 LINE_WIDTH = 2.5
 
 nodeMap = {}
