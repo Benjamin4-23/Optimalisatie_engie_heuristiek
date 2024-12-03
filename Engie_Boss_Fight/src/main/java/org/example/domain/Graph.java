@@ -32,12 +32,26 @@ public class Graph {
         int rootId = -1;
         Node rootNode = new Node(rootId, 0.0, 0.0, NodeType.REGULAR); // ID -1 for the virtual root
 
-        int i = edges.size();
+        /*int i = edges.size();
         for (Node node : nodes.values()) {
             if (node.nodeType != NodeType.PROSPECT) {
                 Edge edgeFromRoot = new Edge(++i, EdgeType.EXISTING, 0, rootNode, node, -1);
                 rootNode.edges.put(i, edgeFromRoot);
                 //edges.put(edgeFromRoot.id, edgeFromRoot);
+            }
+        }*/
+        int i = -1;
+        Set<Integer> visitedNode = new HashSet<>();
+        for (Edge edge: edges.values()){
+            if(edge.edgeType == EdgeType.EXISTING){
+                if(!visitedNode.add(edge.endNode1.id)){
+                    Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode1, -1);
+                    rootNode.edges.put(i--, edgeFromRoot);
+                };
+                if(!visitedNode.add(edge.endNode2.id)){
+                    Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode2, -1);
+                    rootNode.edges.put(i--, edgeFromRoot);
+                };
             }
         }
 
@@ -181,7 +195,6 @@ public class Graph {
                 Node pathNode = currentNode;
                 while (previousEdges.containsKey(pathNode.id)){
                     Edge pathEdge = previousEdges.get(pathNode.id);
-                    pathEdge.cost = 0;
                     pathEdge.use();
                     System.out.println("Marking edge as used: " + pathEdge);
                     // Move to the previous node
