@@ -50,11 +50,19 @@ public class Edge {
         this.isMoved = false;
     }
 
-    public void Use(){
+    public void use(){
         this.isUsed = true;
         // Set each value of the old edges to true
         for (Edge edge : oldEdges) {
             edge.isUsed = true;
+        }
+    }
+
+    public void disgard(){
+        this.isUsed = false;
+        // Set each value of the old edges to false
+        for (Edge edge : oldEdges) {
+            edge.isUsed = false;
         }
     }
 

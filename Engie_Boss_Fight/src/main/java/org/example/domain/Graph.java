@@ -181,7 +181,7 @@ public class Graph {
                 while (previousEdges.containsKey(pathNode)){
                     Edge pathEdge = previousEdges.get(pathNode);
                     pathEdge.cost = 0;
-                    pathEdge.Use();
+                    pathEdge.use();
                     System.out.println("Marking edge as used: " + pathEdge);
                     // Move to the previous node
                     pathNode = (pathEdge.endNode1 == pathNode) ? pathEdge.endNode2 : pathEdge.endNode1;
