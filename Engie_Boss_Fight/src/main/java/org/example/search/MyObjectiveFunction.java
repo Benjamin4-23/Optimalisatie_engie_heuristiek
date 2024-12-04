@@ -27,7 +27,7 @@ public class MyObjectiveFunction extends ObjectiveFunction {
         for (Edge edge : graph.edges.values()) { // TODO: only iterate over the used edges
             if(edge.isUsed){
                 if(edge.edgeType != EdgeType.EXISTING){
-                    cost += edge.originalCost;
+                    cost += edge.cost;
                 }
             }
         }

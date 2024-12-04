@@ -82,7 +82,7 @@ public class OutputWriter {
         jsonBuffer.append("\"edges\":[");
         for (Edge e: edges) {
             if(e.endNode2.id == -1 || e.endNode1.id == -1) continue;
-            jsonBuffer.append(String.format("%d,", e.originalID));
+            jsonBuffer.append(String.format("%d,", e.id));
         }
         jsonBuffer.setLength(jsonBuffer.length() - 1);
         jsonBuffer.append("],");

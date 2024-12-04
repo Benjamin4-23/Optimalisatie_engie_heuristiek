@@ -21,6 +21,7 @@ public class Graph {
         System.out.println("Number of nodes - edges after simplification: " + nodes.size() + "-" + this.edges.size());
         //clearNodes();
         System.out.println("Number of nodes - edges after clearing: " + nodes.size() + "-" + this.edges.size());
+        System.out.println("Locked: " + lockEdges() + " simplified edges");
     }
 
     public Graph(Graph other) {
@@ -46,11 +47,11 @@ public class Graph {
         for (Edge edge: edges.values()){
             if(edge.edgeType == EdgeType.EXISTING){
                 if(!visitedNode.add(edge.endNode1.id)){
-                    Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode1, -1);
+                    Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode1);
                     rootNode.edges.put(i--, edgeFromRoot);
                 };
                 if(!visitedNode.add(edge.endNode2.id)){
-                    Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode2, -1);
+                    Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode2);
                     rootNode.edges.put(i--, edgeFromRoot);
                 };
             }
@@ -93,7 +94,7 @@ public class Graph {
 
                 // Create new edge
                 int combinedCost = edge1.cost + edge2.cost;
-                Edge newEdge = new Edge(++newEdgeId, EdgeType.REGULAR, combinedCost, neighbor1, neighbor2, -1);
+                Edge newEdge = new Edge(++newEdgeId, EdgeType.REGULAR, combinedCost, neighbor1, neighbor2);
 
                 if (edge1.oldEdges.isEmpty()) {
                     newEdge.oldEdges.add(edge1);
@@ -169,8 +170,23 @@ public class Graph {
 
     }
 
-    private void lockEdges(){
+    private int lockEdges(){
+        int lockedEdges = 0;
+        for (Node node : nodes.values()) {
+            // Skip visited nodes or nodes that are not eligible for simplification
+            if (node.id == -1 || node.nodeType == NodeType.REGULAR) {
+                continue;
+            }
 
+            List<Edge> edges = new ArrayList<>(node.edges.values());
+
+            if(edges.size() == 1){ // Prospect with one edge - lock it
+                Edge edge = edges.get(0);
+                edge.lock();
+                lockedEdges++;
+            }
+        }
+        return lockedEdges;
     }
 
     private void clearNodes(){

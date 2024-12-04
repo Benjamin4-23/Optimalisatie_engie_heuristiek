@@ -7,13 +7,14 @@ public class Edge {
     public int id;
     public EdgeType edgeType;
     public int cost;
-    public final int originalCost;
     public boolean isUsed;
+    public boolean isLocked;
 
     public Node endNode1;
     public Node endNode2;
-    public int originalID;
+
     public List<Edge> oldEdges;
+
     public boolean isReplaceable;
     public int replaceableCost;
     List<Edge> replacingEdges;
@@ -23,7 +24,6 @@ public class Edge {
         this.id = edge.id;
         this.edgeType = edge.edgeType;
         this.cost = edge.cost;
-        this.originalCost = edge.originalCost;
         this.endNode1 = edge.endNode1;
         this.endNode2 = edge.endNode2;
         this.isUsed = edge.isUsed;
@@ -32,22 +32,22 @@ public class Edge {
         this.replaceableCost = edge.replaceableCost;
         this.replacingEdges = edge.replacingEdges;
         this.isMoved = false;
+        this.isLocked = edge.isLocked;
     }
 
-    public Edge(int id, EdgeType edgeType, int cost, Node endpoint1, Node endpoint2, int originalId) {
+    public Edge(int id, EdgeType edgeType, int cost, Node endpoint1, Node endpoint2) {
         this.id = id;
         this.edgeType = edgeType;
         this.cost = cost;
-        this.originalCost = cost;
         this.endNode1 = endpoint1;
         this.endNode2 = endpoint2;
         this.isUsed = false;
-        this.originalID = originalId;
         this.oldEdges = new ArrayList<>();
         this.isReplaceable = false;
         this.replaceableCost = 0;
         this.replacingEdges = new ArrayList<>();
         this.isMoved = false;
+        this.isLocked = false;
     }
 
     public void use(){
@@ -63,6 +63,19 @@ public class Edge {
         // Set each value of the old edges to false
         for (Edge edge : oldEdges) {
             edge.isUsed = false;
+        }
+    }
+
+    public void lock(){
+        this.isLocked = true;
+        for (Edge edge : oldEdges) {
+            edge.isLocked = true;
+        }
+    }
+    public void unlock(){
+        this.isLocked = false;
+        for (Edge edge : oldEdges) {
+            edge.isLocked = false;
         }
     }
 

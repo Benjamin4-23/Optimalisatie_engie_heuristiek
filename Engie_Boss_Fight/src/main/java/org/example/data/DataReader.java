@@ -77,7 +77,7 @@ public class DataReader {
                 Node endNode1 = nodes.get(endpoint1);
                 Node endNode2 = nodes.get(endpoint2);
 
-                edges.put(id, new Edge(id, EdgeType.valueOf(type.toUpperCase()), cost, endNode1, endNode2, -1));
+                edges.put(id, new Edge(id, EdgeType.valueOf(type.toUpperCase()), cost, endNode1, endNode2));
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
