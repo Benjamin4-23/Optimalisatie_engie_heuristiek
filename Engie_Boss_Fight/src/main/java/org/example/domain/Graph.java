@@ -13,9 +13,13 @@ public class Graph {
         this.nodes = nodes;
         this.edges = edges;
         transform();
-        //simplify();
+        System.out.println("Number of nodes - edges before shaving: " + nodes.size() + "-" + edges.size());
         //shave();
+        System.out.println("Number of nodes-edges after shaving: " + nodes.size() + "-" + edges.size());
         //simplify();
+        System.out.println("Number of nodes - edges after simplification: " + nodes.size() + "-" + this.edges.size());
+        //clearNodes();
+        System.out.println("Number of nodes - edges after clearing: " + nodes.size() + "-" + this.edges.size());
     }
 
     public Graph(Graph other) {
@@ -67,9 +71,10 @@ public class Graph {
     }
 
     public void simplify() {
-        System.out.println("Number of nodes - edges before simplification: " + nodes.size() + " - " + this.edges.size());
         HashMap<Integer, Edge> simplifiedEdges = new HashMap<>(this.edges);
         Set<Integer> visitedNodes = new HashSet<>();
+        Set<Integer> nodesToRemove = new HashSet<>();
+
 
         int newEdgeId = edges.values().stream().mapToInt(edge -> edge.id).max().orElse(0);
 
@@ -120,16 +125,14 @@ public class Graph {
                 // Clear edges of the current node
                 node.edges.clear();
 
-                //visitedNodes.add(node.id);
+                nodesToRemove.add(node.id);
             }
         }
 
         this.edges = simplifiedEdges;
-        System.out.println("Number of nodes - edges after simplification: " + nodes.size() + " - " + this.edges.size());
     }
 
     public void shave(){
-        System.out.println("Number of nodes - edges before shaving: " + nodes.size() + " - " + edges.size());
         HashMap<Integer, Edge> simplifiedEdges = new HashMap<>(edges);
         int numberOfEdgesRemoved;
         do {
@@ -166,9 +169,8 @@ public class Graph {
 
         this.edges = simplifiedEdges;
 
-        clearNodes();
 
-        System.out.println("Number of nodes - edges after shaving: " + nodes.size() + " - " + edges.size());
+
     }
 
     private void clearNodes(){
@@ -179,7 +181,7 @@ public class Graph {
             if (node.edges.isEmpty() && node.id != -1) {
                 visitedNodes.add(node.id);
                 for (Edge e: edges){
-                    if(e.endNode2 == node || e.endNode1 == node){
+                    if(e.endNode2.id == node.id || e.endNode1.id == node.id){
                        removeEdges.add(e);
                     }
                 }
@@ -248,7 +250,6 @@ public class Graph {
 
         while (!pq.isEmpty()){
             Node currentNode = pq.poll();
-
             if (!visitedNodes.add(currentNode.id)) continue;
 
             for (Edge edge: currentNode.edges.values()){
