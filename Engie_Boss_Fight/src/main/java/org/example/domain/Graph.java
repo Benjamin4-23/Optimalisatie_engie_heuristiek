@@ -19,7 +19,7 @@ public class Graph {
         System.out.println("Number of nodes-edges after shaving: " + nodes.size() + "-" + edges.size());
         simplify();
         System.out.println("Number of nodes - edges after simplification: " + nodes.size() + "-" + this.edges.size());
-        //clearNodes();
+        clearNodes();
         System.out.println("Number of nodes - edges after clearing: " + nodes.size() + "-" + this.edges.size());
         System.out.println("Locked: " + lockEdges() + " simplified edges");
     }
@@ -81,6 +81,14 @@ public class Graph {
             // Skip visited nodes or nodes that are not eligible for simplification
             if (node.id == -1 || node.nodeType == NodeType.PROSPECT) {
                 continue;
+            }
+
+            List<Edge> removeEdges = new ArrayList<>();
+            for (Edge e: node.edges.values()){
+                if(e.endNode2 == e.endNode1) removeEdges.add(e);
+            }
+            for (Edge e: removeEdges){
+                node.edges.remove(e.id);
             }
 
             if (node.edges.size() == 2) { // One outgoing, one incoming? Merge them
