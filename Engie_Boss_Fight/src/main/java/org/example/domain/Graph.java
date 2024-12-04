@@ -8,8 +8,10 @@ import java.util.*;
 public class Graph {
     public HashMap<Integer, Node> nodes;
     public HashMap<Integer, Edge> edges;
+    public Set<Integer> lockedEdges;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
+        lockedEdges = new HashSet<>();
         this.nodes = nodes;
         this.edges = edges;
         transform();
@@ -207,6 +209,7 @@ public class Graph {
 
             if (edges.size() == 1) { // Prospect with one edge - lock it
                 Edge edge = edges.get(0);
+                this.lockedEdges.add(edge.id);
                 edge.lock();
                 lockedEdges++;
             }
