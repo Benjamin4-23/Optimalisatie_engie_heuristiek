@@ -14,8 +14,8 @@ public class Graph {
         this.edges = edges;
         transform();
         //simplify();
-        shave();
-        simplify();
+        //shave();
+        //simplify();
     }
 
     public Graph(Graph other) {
@@ -249,14 +249,12 @@ public class Graph {
         while (!pq.isEmpty()){
             Node currentNode = pq.poll();
 
-            if(visitedNodes.contains(currentNode.id)) continue;
-            visitedNodes.add(currentNode.id);
-            //if (!visitedNodes.add(currentNode.id)) continue;
+            if (!visitedNodes.add(currentNode.id)) continue;
 
             for (Edge edge: currentNode.edges.values()){
                 Node neighbour = (edge.endNode1.id == currentNode.id) ? edge.endNode2 : edge.endNode1;
 
-                if(visitedNodes.contains(neighbour.id)) continue;
+                if(visitedNodes.contains(neighbour.id) || currentNode.nodeType == NodeType.PROSPECT) continue;
 
                 double newCost = distances.get(currentNode.id) + edge.cost;
 
