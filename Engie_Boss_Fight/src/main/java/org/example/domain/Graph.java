@@ -233,59 +233,59 @@ public class Graph {
         return null;
     }
 
-    public Map<Node, Double> dijkstra(){
+    public Map<Node, Double> dijkstra() {
         Node rootNode = nodes.get(-1);
-
         Map<Integer, Double> distances = new HashMap<>();
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(a -> distances.getOrDefault(a, Double.POSITIVE_INFINITY)));
-        Set<Integer> visitedNodes = new HashSet<>();
-        Map<Integer,Edge> previousEdges = new HashMap<>();
+        Map<Integer, Edge> previousEdges = new HashMap<>();
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(node -> distances.getOrDefault(node.id, Double.POSITIVE_INFINITY)));
 
         // Initialize distances
-        for (Node node: nodes.values()){
+        for (Node node : nodes.values()) {
             distances.put(node.id, Double.POSITIVE_INFINITY);
         }
         distances.put(rootNode.id, 0.0);
         pq.add(rootNode);
 
-        while (!pq.isEmpty()){
+        while (!pq.isEmpty()) {
             Node currentNode = pq.poll();
-            if (!visitedNodes.add(currentNode.id)) continue;
 
-            for (Edge edge: currentNode.edges.values()){
-                Node neighbour = (edge.endNode1.id == currentNode.id) ? edge.endNode2 : edge.endNode1;
-
-                if(visitedNodes.contains(neighbour.id) || currentNode.nodeType == NodeType.PROSPECT) continue;
+            // Process each edge of the current node
+            for (Edge edge : currentNode.edges.values()) {
+                Node neighbor = (edge.endNode1.id == currentNode.id) ? edge.endNode2 : edge.endNode1;
 
                 double newCost = distances.get(currentNode.id) + edge.cost;
 
-                //relaxatie
-                if(newCost < distances.get(neighbour.id)){
-                    distances.put(neighbour.id, newCost);
-                    pq.add(neighbour);
-                    previousEdges.put(neighbour.id, edge);
+                // Relaxation step
+                if (newCost < distances.get(neighbor.id)) {
+                    distances.put(neighbor.id, newCost);
+                    previousEdges.put(neighbor.id, edge);
+                    pq.add(neighbor); // Re-insert to update priority
                 }
             }
+        }
 
-            // handle propects
-            if(currentNode.nodeType == NodeType.PROSPECT){
-                Node pathNode = currentNode;
-                while (previousEdges.containsKey(pathNode.id)){
+        // Collect distances for prospects
+        Map<Node, Double> prospectDistances = new HashMap<>();
+        for (Node node : nodes.values()) {
+            if (node.nodeType == NodeType.PROSPECT) {
+                prospectDistances.put(node, distances.get(node.id));
+            }
+        }
+
+        // Optional: Mark paths and edges used for prospects
+        for (Node prospect : nodes.values()) {
+            if (prospect.nodeType == NodeType.PROSPECT) {
+                Node pathNode = prospect;
+                while (previousEdges.containsKey(pathNode.id)) {
                     Edge pathEdge = previousEdges.get(pathNode.id);
-                    pathEdge.use();
-
-                    // Move to the previous node
+                    pathEdge.use(); // Mark edge as used
                     pathNode = (pathEdge.endNode1 == pathNode) ? pathEdge.endNode2 : pathEdge.endNode1;
                 }
             }
         }
-        Map<Node, Double> prospectDistances = new HashMap<>();
-        for(Node node: nodes.values()){
-            if(node.nodeType == NodeType.PROSPECT){
-                prospectDistances.put(node, distances.get(node.id));
-            }
-        }
+
         return prospectDistances;
     }
+
 
 }
