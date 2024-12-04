@@ -249,6 +249,7 @@ public class Graph {
 
         while (!pq.isEmpty()) {
             Node currentNode = pq.poll();
+            if(currentNode.nodeType == NodeType.PROSPECT) continue;
 
             // Process each edge of the current node
             for (Edge edge : currentNode.edges.values()) {
