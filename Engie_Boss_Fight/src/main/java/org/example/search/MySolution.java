@@ -49,10 +49,9 @@ public class MySolution implements Solution {
 
     public void GenerateSolution() {
         graph.dijkstra();
-
     }
+
     public Graph getGraph() {
         return graph;
     }
-
 }

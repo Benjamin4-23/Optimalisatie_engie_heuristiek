@@ -79,6 +79,10 @@ public class Edge {
         }
     }
 
+    public Node getOtherNode(int id){
+        return endNode1.id == id ? endNode2 : endNode1;
+    }
+
     @Override
     public String toString() {
         return String.format("Edge: %d-%d", endNode1.id, endNode2.id);

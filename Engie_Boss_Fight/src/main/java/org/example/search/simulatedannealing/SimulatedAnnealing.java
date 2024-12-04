@@ -40,12 +40,10 @@ public class SimulatedAnnealing extends SearchAlgorithm {
         return bestResult;
     }
 
-
     @Override
     public Solution getBestSolution() {
         return bestSolution;
     }
-
 
     @Override
     public Solution getCurrentSolution() {

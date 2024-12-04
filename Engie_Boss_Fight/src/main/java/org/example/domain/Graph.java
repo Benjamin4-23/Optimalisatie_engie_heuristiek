@@ -89,8 +89,8 @@ public class Graph {
                 Edge edge2 = edges.get(1);
 
                 // Get neighbors
-                Node neighbor1 = edge1.endNode1.id == node.id ? edge1.endNode2 : edge1.endNode1;
-                Node neighbor2 = edge2.endNode1.id == node.id ? edge2.endNode2 : edge2.endNode1;
+                Node neighbor1 = edge1.getOtherNode(node.id);
+                Node neighbor2 = edge2.getOtherNode(node.id);
 
                 // Create new edge
                 int combinedCost = edge1.cost + edge2.cost;
@@ -147,7 +147,7 @@ public class Graph {
 
 
                     // Get neighbor
-                    Node neighbor = edge.endNode1.id == node.id ? edge.endNode2 : edge.endNode1;
+                    Node neighbor = edge.getOtherNode(node.id);
 
                     // Remove edges in the outgoing/ incoming edges list of the neighbor
                     neighbor.removeEdgeWithNode(node);
@@ -219,34 +219,42 @@ public class Graph {
         return new Graph(this);
     }
 
-    public List<Node> findPath(Node start, Node end){
-        Set<Node> vistedNode = new HashSet<>();
-        Queue<List<Node>> queue = new LinkedList<>();
+    public static List<List<Edge>> BFS(Node start, Node end) {
+        //return all unique paths
+        List<List<Edge>> allPaths = new ArrayList<>();
+        Queue<List<Edge>> queue = new LinkedList<>();
+        queue.add(new ArrayList<>());
 
-        queue.offer(new ArrayList<>(){{add(start);}});
-        vistedNode.add(start);
-        while (!queue.isEmpty()){
-            List<Node> currentPath = queue.poll();
-            Node currentNode = currentPath.get(currentPath.size()-1);
+        while (!queue.isEmpty()) {
+            List<Edge> currentPath = queue.poll();
+            Node currentNode = currentPath.isEmpty() ? start : currentPath.get(currentPath.size() - 1).getOtherNode(start.id);
 
-            if(currentNode==end){
-                return currentPath;
+            if (currentNode.id == end.id) {
+                allPaths.add(new ArrayList<>(currentPath));
+                continue;
             }
 
-            if(!vistedNode.add(currentNode)) continue;
+            for (Edge edge : currentNode.edges.values()) {
+                Node neighbor = edge.getOtherNode(currentNode.id);
 
-            for(Edge e : currentNode.edges.values()){
-                Node nextNode = e.endNode2;
-                if(vistedNode.contains(nextNode) && !e.isUsed) continue;
-
-                List<Node> newPath = new ArrayList<>(currentPath);
-                newPath.add(nextNode);
-                queue.offer(newPath);
-
+                if (!isNodeInPath(currentPath, neighbor.id)) {
+                    List<Edge> newPath = new ArrayList<>(currentPath);
+                    newPath.add(edge);
+                    queue.add(newPath);
+                }
             }
-
         }
-        return null;
+
+        return allPaths;
+    }
+
+    private static boolean isNodeInPath(List<Edge> path, int nodeId) {
+        for (Edge edge : path) {
+            if (edge.endNode1.id == nodeId || edge.endNode2.id == nodeId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Map<Node, Double> dijkstra() {
@@ -268,7 +276,7 @@ public class Graph {
 
             // Process each edge of the current node
             for (Edge edge : currentNode.edges.values()) {
-                Node neighbor = (edge.endNode1.id == currentNode.id) ? edge.endNode2 : edge.endNode1;
+                Node neighbor = edge.getOtherNode(currentNode.id);
 
                 double newCost = distances.get(currentNode.id) + edge.cost;
 
