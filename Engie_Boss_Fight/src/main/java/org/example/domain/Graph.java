@@ -13,14 +13,17 @@ public class Graph {
         this.nodes = nodes;
         this.edges = edges;
         transform();
-        System.out.println("Number of nodes - edges before shaving: " + nodes.size() + "-" + edges.size());
+        System.out.println("Number of nodes-edges at start: " + this.nodes.size() + "-" + this.edges.size());
         shave();
-        clearNodes();
-        System.out.println("Number of nodes-edges after shaving: " + nodes.size() + "-" + edges.size());
+        System.out.println("Number of nodes-edges after shaving: " + this.nodes.size() + "-" + this.edges.size());
         simplify();
-        System.out.println("Number of nodes - edges after simplification: " + nodes.size() + "-" + this.edges.size());
-        //clearNodes();
-        System.out.println("Number of nodes - edges after clearing: " + nodes.size() + "-" + this.edges.size());
+        System.out.println("Number of nodes-edges after simplification: " + this.nodes.size() + "-" + this.edges.size());
+
+        System.out.println();
+        shave();
+        System.out.println("Number of nodes-edges after second shaving: " + this.nodes.size() + "-" + this.edges.size());
+        simplify();
+        System.out.println("Number of nodes-edges after second simplification: " + this.nodes.size() + "-" + this.edges.size());
         System.out.println("Locked: " + lockEdges() + " simplified edges");
     }
 
@@ -108,14 +111,37 @@ public class Graph {
                     newEdge.oldEdges.addAll(edge2.oldEdges);
                 }
 
-                simplifiedEdges.put(newEdge.id, newEdge);
-
                 // Update neighbors
                 neighbor1.removeEdgeWithNode(node);
-                neighbor1.edges.put(newEdge.id, newEdge);
-
                 neighbor2.removeEdgeWithNode(node);
-                neighbor2.edges.put(newEdge.id, newEdge);
+
+                // Only add the edge if the neighbors don't have an edge between them already
+                Edge parallelEdge = null;
+                List<Edge> neighborEdges = new ArrayList<>(neighbor1.edges.values());
+                for (Edge e : neighborEdges) {
+                    if (e.endNode1.id == neighbor2.id || e.endNode2.id == neighbor2.id) {
+                        parallelEdge = e;
+                        break;
+                    }
+                }
+
+                if(parallelEdge != null){
+                    if(parallelEdge.cost > combinedCost){
+                        neighbor1.removeEdgeWithNode(neighbor2);
+                        neighbor2.removeEdgeWithNode(neighbor1);
+                        // we remove the old edge and add the new edge
+                        simplifiedEdges.put(newEdge.id, newEdge);
+                        neighbor1.edges.put(newEdge.id, newEdge);
+                        neighbor2.edges.put(newEdge.id, newEdge);
+                    }
+                    // Else do nothing, the old edge is better
+                }else{ // No existing edges => add the new edge
+                    simplifiedEdges.put(newEdge.id, newEdge);
+                    neighbor1.edges.put(newEdge.id, newEdge);
+                    neighbor2.edges.put(newEdge.id, newEdge);
+                }
+
+
 
                 // Remove edges from the graph
                 simplifiedEdges.remove(edge1.id);
@@ -127,6 +153,7 @@ public class Graph {
         }
 
         this.edges = simplifiedEdges;
+        clearNodes();
     }
 
     public void shave(){
@@ -165,12 +192,11 @@ public class Graph {
         } while (numberOfEdgesRemoved > 0);
 
         this.edges = simplifiedEdges;
-
-
+        clearNodes();
 
     }
 
-    private int lockEdges(){
+    private int lockEdges() {
         int lockedEdges = 0;
         for (Node node : nodes.values()) {
             // Skip visited nodes or nodes that are not eligible for simplification
@@ -180,7 +206,7 @@ public class Graph {
 
             List<Edge> edges = new ArrayList<>(node.edges.values());
 
-            if(edges.size() == 1){ // Prospect with one edge - lock it
+            if (edges.size() == 1) { // Prospect with one edge - lock it
                 Edge edge = edges.get(0);
                 edge.lock();
                 lockedEdges++;
@@ -190,13 +216,13 @@ public class Graph {
     }
 
     private void clearNodes(){
-        Set<Integer> visitedNodes = new HashSet<>();
-        Collection<Edge> edges = nodes.get(-1).edges.values();
+        Set<Integer> removeNodes = new HashSet<>();
+        Collection<Edge> rootEdges = nodes.get(-1).edges.values();
         List<Edge> removeEdges = new ArrayList<>();
         for (Node node : nodes.values()) {
             if (node.edges.isEmpty() && node.id != -1) {
-                visitedNodes.add(node.id);
-                for (Edge e: edges){
+                removeNodes.add(node.id);
+                for (Edge e: rootEdges){
                     if(e.endNode2.id == node.id || e.endNode1.id == node.id){
                        removeEdges.add(e);
                     }
@@ -205,11 +231,24 @@ public class Graph {
         }
 
         for (Edge e : removeEdges){
-            edges.remove(e);
+            this.edges.remove(e.id);
+            rootEdges.remove(e);
         }
 
-        for (Integer id : visitedNodes) {
+        for (Integer id : removeNodes) {
             nodes.remove(id);
+        }
+
+        removeEdges.clear();
+        // check that no edges are left with a node that is not in the graph
+        for (Edge e : this.edges.values()){
+            if(removeNodes.contains(e.endNode1.id) || removeNodes.contains(e.endNode2.id)){
+                removeEdges.add(e);
+            }
+
+        }
+        for (Edge e : removeEdges){
+            this.edges.remove(e.id);
         }
     }
 
