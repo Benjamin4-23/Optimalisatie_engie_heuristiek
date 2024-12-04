@@ -31,7 +31,6 @@ public class MyObjectiveFunction extends ObjectiveFunction {
                 }
             }
         }
-        //System.out.println("Cost: " + cost);
         return cost;
     }
     private double deltaEvaluation(Solution solution, Move move) {

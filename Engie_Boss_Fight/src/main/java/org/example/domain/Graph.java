@@ -19,12 +19,11 @@ public class Graph {
         simplify();
         System.out.println("Number of nodes-edges after simplification: " + this.nodes.size() + "-" + this.edges.size());
 
-        System.out.println();
         shave();
-        System.out.println("Number of nodes-edges after second shaving: " + this.nodes.size() + "-" + this.edges.size());
+        System.out.println("\nNumber of nodes-edges after second shaving: " + this.nodes.size() + "-" + this.edges.size());
         simplify();
         System.out.println("Number of nodes-edges after second simplification: " + this.nodes.size() + "-" + this.edges.size());
-        System.out.println("Locked: " + lockEdges() + " simplified edges");
+        System.out.println("\nLocked " + lockEdges() + " prospect connections");
     }
 
     public Graph(Graph other) {
