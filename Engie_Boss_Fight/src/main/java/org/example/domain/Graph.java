@@ -73,15 +73,12 @@ public class Graph {
 
     public void simplify() {
         HashMap<Integer, Edge> simplifiedEdges = new HashMap<>(this.edges);
-        Set<Integer> visitedNodes = new HashSet<>();
-        Set<Integer> nodesToRemove = new HashSet<>();
-
 
         int newEdgeId = edges.values().stream().mapToInt(edge -> edge.id).max().orElse(0);
 
         for (Node node : nodes.values()) {
             // Skip visited nodes or nodes that are not eligible for simplification
-            if (visitedNodes.contains(node.id) || node.id == -1 || node.nodeType == NodeType.PROSPECT) {
+            if (node.id == -1 || node.nodeType == NodeType.PROSPECT) {
                 continue;
             }
 
@@ -125,8 +122,6 @@ public class Graph {
 
                 // Clear edges of the current node
                 node.edges.clear();
-
-                nodesToRemove.add(node.id);
             }
         }
 
@@ -171,6 +166,10 @@ public class Graph {
         this.edges = simplifiedEdges;
 
 
+
+    }
+
+    private void lockEdges(){
 
     }
 
