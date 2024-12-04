@@ -14,9 +14,10 @@ public class Graph {
         this.edges = edges;
         transform();
         System.out.println("Number of nodes - edges before shaving: " + nodes.size() + "-" + edges.size());
-        //shave();
+        shave();
+        clearNodes();
         System.out.println("Number of nodes-edges after shaving: " + nodes.size() + "-" + edges.size());
-        //simplify();
+        simplify();
         System.out.println("Number of nodes - edges after simplification: " + nodes.size() + "-" + this.edges.size());
         //clearNodes();
         System.out.println("Number of nodes - edges after clearing: " + nodes.size() + "-" + this.edges.size());
