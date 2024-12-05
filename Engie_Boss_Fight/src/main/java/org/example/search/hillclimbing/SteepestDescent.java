@@ -28,8 +28,8 @@ public class SteepestDescent extends SearchAlgorithm {
     @Override
     public double execute(int numberOfIterations) {
         currentResult = bestResult;
-        Move move = new SwapTwoPaths();
         for (int i = 0; i < numberOfIterations; i++) {
+            Move move = new SwapTwoPaths();
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
                 bestSolution = (MySolution) currentSolution.clone();

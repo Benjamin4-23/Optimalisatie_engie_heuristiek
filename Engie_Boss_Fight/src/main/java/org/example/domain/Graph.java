@@ -28,7 +28,9 @@ public class Graph {
         System.out.println("\nNumber of nodes-edges after second shaving: " + this.nodes.size() + "-" + this.edges.size());
         simplify();
         System.out.println("Number of nodes-edges after second simplification: " + this.nodes.size() + "-" + this.edges.size());
-        System.out.println("\nLocked " + lockEdges() + " prospect connections, " + this.unlockedEdges.size() + " unlocked edges left.");
+
+        lockEdges();
+        System.out.println("\nLocked " + this.lockedEdges.size() + " prospect connections, " + this.unlockedEdges.size() + " unlocked edges left.");
     }
 
     public Graph(Graph other) {
@@ -185,21 +187,19 @@ public class Graph {
 
     }
 
-    private int lockEdges(){
-        int lockedEdges = 0;
+    private void lockEdges(){
         for (Edge edge : edges.values()) {
             Node node1 = edge.endNode1;
             Node node2 = edge.endNode2;
 
             if (edge.edgeType == EdgeType.EXISTING || node1.nodeType == NodeType.PROSPECT || node2.nodeType == NodeType.PROSPECT) {
                 edge.lock();
-                lockedEdges++;
                 this.lockedEdges.add(edge.id);
             }else{
+                edge.unlock();
                 this.unlockedEdges.add(edge.id);
             }
         }
-        return lockedEdges;
     }
 
     private void clearNodes(){
