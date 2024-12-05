@@ -402,10 +402,13 @@ public class Graph {
                 Node pathNode = end;
                 while (previousEdge.containsKey(pathNode)) {
                     Edge edge = previousEdge.get(pathNode);
-                    if(!edge.isUsed) unusedCost += edge.cost;
+                    if(!edge.isUsed){
+                        unusedCost += edge.cost;
+                    }
                     path.add(0, edge);
                     pathNode = edge.getOtherNode(pathNode.id);
                 }
+                path.cost = unusedCost;
                 return path;
             }
 
