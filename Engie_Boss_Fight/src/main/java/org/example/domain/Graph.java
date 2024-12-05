@@ -10,10 +10,12 @@ public class Graph {
     public HashMap<Integer, Edge> edges;
     public List<Integer> lockedEdges;
     public List<Integer> unlockedEdges;
+    public HashMap<Integer, Edge> usedEdges;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.lockedEdges = new ArrayList<>();
         this.unlockedEdges = new ArrayList<>();
+        this.usedEdges = new HashMap<>();
         this.nodes = nodes;
         this.edges = edges;
         transform();
@@ -45,6 +47,10 @@ public class Graph {
         for (Integer key : other.edges.keySet()) {
             this.edges.put(key, new Edge(other.edges.get(key))); // Assuming Edge has a copy constructor
         }
+
+        this.lockedEdges = new ArrayList<>(other.lockedEdges);
+        this.unlockedEdges = new ArrayList<>(other.unlockedEdges);
+        this.usedEdges = new HashMap<>(other.usedEdges);
     }
 
     public void transform(){
@@ -236,6 +242,12 @@ public class Graph {
 
 
     public Map<Node, Double> dijkstra() {
+        // Make sure all edges are unused
+        for (Edge edge : edges.values()) {
+            edge.disgard();
+        }
+        this.usedEdges.clear();
+
         Node rootNode = nodes.get(-1);
         Map<Integer, Double> distances = new HashMap<>();
         Map<Integer, Edge> previousEdges = new HashMap<>();
@@ -283,6 +295,9 @@ public class Graph {
                 while (previousEdges.containsKey(pathNode.id)) {
                     Edge pathEdge = previousEdges.get(pathNode.id);
                     pathEdge.use(); // Mark edge as used
+                    if(!(pathEdge.endNode1.id == rootNode.id) && !(pathEdge.endNode2.id == rootNode.id)){
+                        this.usedEdges.put(pathEdge.id, pathEdge);
+                    }
                     pathNode = (pathEdge.endNode1 == pathNode) ? pathEdge.endNode2 : pathEdge.endNode1;
                 }
             }
@@ -291,60 +306,50 @@ public class Graph {
         return prospectDistances;
     }
 
-    public Map<Node, Double> reConnect() {
-        Node rootNode = nodes.get(-1);
-        Map<Integer, Double> distances = new HashMap<>();
-        Map<Integer, Edge> previousEdges = new HashMap<>();
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(node -> distances.getOrDefault(node.id, Double.POSITIVE_INFINITY)));
+    public void reconnect() {
+        // Create a priority queue to store edges, sorted by cost
+        PriorityQueue<Edge> edgeQueue = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.cost));
 
-        // Initialize distances
-        for (Node node : nodes.values()) {
-            distances.put(node.id, Double.POSITIVE_INFINITY);
-        }
-        distances.put(rootNode.id, 0.0);
-        pq.add(rootNode);
-
-        while (!pq.isEmpty()) {
-            Node currentNode = pq.poll();
-            if(currentNode.nodeType == NodeType.PROSPECT) continue;
-
-            // Process each edge of the current node
-            for (Edge edge : currentNode.edges.values()) {
-                Node neighbor = edge.getOtherNode(currentNode.id);
-
-                double newCost = distances.get(currentNode.id) + edge.cost;
-
-                // Relaxation step
-                if (newCost < distances.get(neighbor.id)) {
-                    distances.put(neighbor.id, newCost);
-                    previousEdges.put(neighbor.id, edge);
-                    pq.add(neighbor); // Re-insert to update priority
-                }
-            }
+        // Add all edges from the existing network (used edges) to the priority queue
+        for (Edge edge : usedEdges.values()) {
+            edgeQueue.add(edge);
         }
 
-        // Collect distances for prospects
-        Map<Node, Double> prospectDistances = new HashMap<>();
-        for (Node node : nodes.values()) {
-            if (node.nodeType == NodeType.PROSPECT) {
-                prospectDistances.put(node, distances.get(node.id));
-            }
+        // Track connected nodes (nodes already in the existing network)
+        Set<Integer> connectedNodes = new HashSet<>();
+        for (Edge edge : usedEdges.values()) {
+            connectedNodes.add(edge.endNode1.id);
+            connectedNodes.add(edge.endNode2.id);
         }
 
-        // Optional: Mark paths and edges used for prospects
+        // Iterate over all disconnected PROSPECT nodes
         for (Node prospect : nodes.values()) {
-            if (prospect.nodeType == NodeType.PROSPECT) {
-                Node pathNode = prospect;
-                while (previousEdges.containsKey(pathNode.id)) {
-                    Edge pathEdge = previousEdges.get(pathNode.id);
-                    pathEdge.use(); // Mark edge as used
-                    pathNode = (pathEdge.endNode1 == pathNode) ? pathEdge.endNode2 : pathEdge.endNode1;
+            if (prospect.nodeType == NodeType.PROSPECT && !connectedNodes.contains(prospect.id)) {
+                Edge bestEdge = null;
+                double minCost = Double.POSITIVE_INFINITY;
+
+                // Find the minimum cost edge connecting this prospect to the existing network
+                for (Edge edge : prospect.edges.values()) {
+                    Node otherNode = edge.getOtherNode(prospect.id);
+                    if (connectedNodes.contains(otherNode.id) && edge.cost < minCost) {
+                        bestEdge = edge;
+                        minCost = edge.cost;
+                    }
+                }
+
+                // If a valid edge is found, connect the prospect to the network
+                if (bestEdge != null) {
+                    bestEdge.use(); // Mark the edge as used
+                    usedEdges.put(bestEdge.id, bestEdge);
+                    connectedNodes.add(prospect.id); // Mark the prospect as connected
+                } else {
+                    // Optional: handle cases where a prospect cannot be connected
+                    System.out.println("No valid connection found for prospect: " + prospect.id);
                 }
             }
         }
-
-        return prospectDistances;
     }
+
 
     public static List<List<Edge>> BFS(Node start, Node end) {
         //return all unique paths

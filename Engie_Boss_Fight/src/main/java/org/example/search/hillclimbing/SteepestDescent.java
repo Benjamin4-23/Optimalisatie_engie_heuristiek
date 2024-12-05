@@ -28,8 +28,9 @@ public class SteepestDescent extends SearchAlgorithm {
     @Override
     public double execute(int numberOfIterations) {
         currentResult = bestResult;
+        Move move = new SwapTwoPaths();
         for (int i = 0; i < numberOfIterations; i++) {
-            Move move = new SwapTwoPaths();
+            currentResult =  function.evaluate(currentSolution, move);
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
                 bestSolution = (MySolution) currentSolution.clone();
@@ -38,7 +39,6 @@ public class SteepestDescent extends SearchAlgorithm {
             else {
                 move.undoMove(currentSolution);
             }
-            currentResult =  function.evaluate(currentSolution, move);
 
         }
         //System.out.println("bestSolution " + function.evaluate(bestSolution, null) + " " + bestResult);
