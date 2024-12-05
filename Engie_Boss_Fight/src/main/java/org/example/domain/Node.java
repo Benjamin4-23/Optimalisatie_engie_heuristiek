@@ -32,13 +32,12 @@ public class Node {
         for (Edge edge : this.edges.values()){
             if(edge.endNode1.id == node.id || edge.endNode2.id == node.id){
                 delete = edge;
+                break;
             }
         }
         if(delete != null){
             this.edges.remove(delete.id);
-            return;
         }
-        throw new RuntimeException("Edge niet gevonden man, doing strange shit here");
     }
 
     @Override
