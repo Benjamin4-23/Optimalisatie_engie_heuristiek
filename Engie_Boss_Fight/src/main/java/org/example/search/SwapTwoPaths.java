@@ -1,5 +1,8 @@
 package org.example.search;
 
+import org.example.domain.Edge;
+import org.example.domain.EdgeType;
+import org.example.domain.Graph;
 import org.example.search.framework.Move;
 import org.example.search.framework.Solution;
 
@@ -26,7 +29,17 @@ public class SwapTwoPaths extends Move{
     }
 
     private double calculateEvaluation(){
-        return 0.0;
+        double cost = 0.0;
+        Graph graph = ((MySolution) solution).getGraph();
+
+        for (Edge edge : graph.edges.values()) {
+            if(edge.isUsed){
+                if(edge.edgeType != EdgeType.EXISTING){
+                    cost += edge.cost;
+                }
+            }
+        }
+        return cost;
     }
     private double calculateDeltaEvaluation() {
         // TODO: calculate the delta evaluation
