@@ -17,9 +17,10 @@ public class Graph {
         this.nodes = nodes;
         this.edges = edges;
         transform();
-        System.out.println("Number of nodes-edges at start: " + this.nodes.size() + "-" + this.edges.size());
+        System.out.println("Number of nodes - edges before shaving: " + nodes.size() + "-" + edges.size());
         shave();
-        System.out.println("Number of nodes-edges after shaving: " + this.nodes.size() + "-" + this.edges.size());
+        clearNodes();
+        System.out.println("Number of nodes-edges after shaving: " + nodes.size() + "-" + edges.size());
         simplify();
         System.out.println("Number of nodes-edges after simplification: " + this.nodes.size() + "-" + this.edges.size());
 
@@ -89,6 +90,14 @@ public class Graph {
                 continue;
             }
 
+            List<Edge> removeEdges = new ArrayList<>();
+            for (Edge e: node.edges.values()){
+                if(e.endNode2 == e.endNode1) removeEdges.add(e);
+            }
+            for (Edge e: removeEdges){
+                node.edges.remove(e.id);
+            }
+
             if (node.edges.size() == 2) { // One outgoing, one incoming? Merge them
                 List<Edge> edges = new ArrayList<>(node.edges.values());
                 Edge edge1 = edges.get(0);
@@ -114,37 +123,14 @@ public class Graph {
                     newEdge.oldEdges.addAll(edge2.oldEdges);
                 }
 
+                simplifiedEdges.put(newEdge.id, newEdge);
+
                 // Update neighbors
                 neighbor1.removeEdgeWithNode(node);
+                neighbor1.edges.put(newEdge.id, newEdge);
+
                 neighbor2.removeEdgeWithNode(node);
-
-                // Only add the edge if the neighbors don't have an edge between them already
-                Edge parallelEdge = null;
-                List<Edge> neighborEdges = new ArrayList<>(neighbor1.edges.values());
-                for (Edge e : neighborEdges) {
-                    if (e.endNode1.id == neighbor2.id || e.endNode2.id == neighbor2.id) {
-                        parallelEdge = e;
-                        break;
-                    }
-                }
-
-                if(parallelEdge != null){
-                    if(parallelEdge.cost > combinedCost){
-                        neighbor1.removeEdgeWithNode(neighbor2);
-                        neighbor2.removeEdgeWithNode(neighbor1);
-                        // we remove the old edge and add the new edge
-                        simplifiedEdges.put(newEdge.id, newEdge);
-                        neighbor1.edges.put(newEdge.id, newEdge);
-                        neighbor2.edges.put(newEdge.id, newEdge);
-                    }
-                    // Else do nothing, the old edge is better
-                }else{ // No existing edges => add the new edge
-                    simplifiedEdges.put(newEdge.id, newEdge);
-                    neighbor1.edges.put(newEdge.id, newEdge);
-                    neighbor2.edges.put(newEdge.id, newEdge);
-                }
-
-
+                neighbor2.edges.put(newEdge.id, newEdge);
 
                 // Remove edges from the graph
                 simplifiedEdges.remove(edge1.id);
@@ -156,7 +142,6 @@ public class Graph {
         }
 
         this.edges = simplifiedEdges;
-        clearNodes();
     }
 
     public void shave(){
@@ -195,11 +180,12 @@ public class Graph {
         } while (numberOfEdgesRemoved > 0);
 
         this.edges = simplifiedEdges;
-        clearNodes();
+
+
 
     }
 
-    private int lockEdges() {
+    private int lockEdges(){
         int lockedEdges = 0;
         for (Edge edge : edges.values()) {
             Node node1 = edge.endNode1;
@@ -217,13 +203,13 @@ public class Graph {
     }
 
     private void clearNodes(){
-        Set<Integer> removeNodes = new HashSet<>();
-        Collection<Edge> rootEdges = nodes.get(-1).edges.values();
+        Set<Integer> visitedNodes = new HashSet<>();
+        Collection<Edge> edges = nodes.get(-1).edges.values();
         List<Edge> removeEdges = new ArrayList<>();
         for (Node node : nodes.values()) {
             if (node.edges.isEmpty() && node.id != -1) {
-                removeNodes.add(node.id);
-                for (Edge e: rootEdges){
+                visitedNodes.add(node.id);
+                for (Edge e: edges){
                     if(e.endNode2.id == node.id || e.endNode1.id == node.id){
                        removeEdges.add(e);
                     }
@@ -232,24 +218,11 @@ public class Graph {
         }
 
         for (Edge e : removeEdges){
-            this.edges.remove(e.id);
-            rootEdges.remove(e);
+            edges.remove(e);
         }
 
-        for (Integer id : removeNodes) {
+        for (Integer id : visitedNodes) {
             nodes.remove(id);
-        }
-
-        removeEdges.clear();
-        // check that no edges are left with a node that is not in the graph
-        for (Edge e : this.edges.values()){
-            if(removeNodes.contains(e.endNode1.id) || removeNodes.contains(e.endNode2.id)){
-                removeEdges.add(e);
-            }
-
-        }
-        for (Edge e : removeEdges){
-            this.edges.remove(e.id);
         }
     }
 
