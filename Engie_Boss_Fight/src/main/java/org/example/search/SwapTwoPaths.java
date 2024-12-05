@@ -6,15 +6,38 @@ import org.example.domain.Graph;
 import org.example.search.framework.Move;
 import org.example.search.framework.Solution;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SwapTwoPaths extends Move{
     private Solution solution;
+    private  Graph graph;
     private double delta;
     private double oldCost = 0.0;
+    List<Integer> indexes = new ArrayList<>();
+
     @Override
     public double doMove(Solution solution) {
         this.solution = solution;
         oldCost = solution.getObjectiveValue();
-        // TODO: switch two random paths
+
+        // Select subset of paths
+        graph = ((MySolution) solution).getGraph();
+
+        for (int i = 0; i < 5; i++) {
+            // Get 5 random edges from graph.unlockedEdges
+            int randomIndex = 0;
+            do{
+                randomIndex = (int) (Math.random() * graph.unlockedEdges.size());
+            }while(indexes.contains(randomIndex));
+            indexes.add(this.graph.unlockedEdges.get(randomIndex));
+        }
+
+        for (Integer index : indexes) {
+            Edge edge = graph.edges.get(index);
+            this.oldCost += edge.cost;
+            edge.disgard();
+        }
 
 
         return calculateDeltaEvaluation();
@@ -42,7 +65,12 @@ public class SwapTwoPaths extends Move{
         return cost;
     }
     private double calculateDeltaEvaluation() {
-        // TODO: calculate the delta evaluation
-        return 0.0;
+        this.graph.dijkstra();
+        double newCost = calculateEvaluation();
+        this.delta = newCost - oldCost;
+        double currentResult = solution.getObjectiveValue();
+        double deltaEvaluation = currentResult + this.delta;
+        solution.setObjectiveValue(deltaEvaluation);
+        return deltaEvaluation;
     }
 }

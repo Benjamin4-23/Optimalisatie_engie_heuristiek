@@ -22,6 +22,7 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
         currentSolution = new MySolution(path);
         bestSolution = currentSolution;
         bestResult = function.evaluate(bestSolution,null);
+        System.out.println("Initial result: " + bestResult);
         this.lateAcceptanceList = new LAList(listLength);
     }
 
@@ -32,8 +33,8 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
         currentResult = function.evaluate(currentSolution, null);
         this.lateAcceptanceList.fillList(currentResult);
         int teller = 0;
-        Move move = new SwapTwoPaths();
         for (int i = 0; i < numberOfIterations; i++) {
+            Move move = new SwapTwoPaths();
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
                 lateAcceptanceList.addToBeginOfList(currentResult);

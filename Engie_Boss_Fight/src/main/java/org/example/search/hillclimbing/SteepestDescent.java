@@ -23,7 +23,7 @@ public class SteepestDescent extends SearchAlgorithm {
         this.currentSolution = new MySolution(path);
         this.bestSolution = this.currentSolution;
         this.bestResult = this.function.evaluate(this.bestSolution, null);
-        System.out.println("bestResult " + bestResult);
+        System.out.println("Initial result: " + bestResult);
     }
     @Override
     public double execute(int numberOfIterations) {
@@ -33,7 +33,7 @@ public class SteepestDescent extends SearchAlgorithm {
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
                 bestSolution = (MySolution) currentSolution.clone();
-                //System.out.println(bestResult);
+                System.out.println(bestResult);
             }
             else {
                 move.undoMove(currentSolution);

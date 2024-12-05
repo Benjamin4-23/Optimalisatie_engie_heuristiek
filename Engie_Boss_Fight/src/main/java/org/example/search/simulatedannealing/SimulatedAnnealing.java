@@ -18,13 +18,15 @@ public class SimulatedAnnealing extends SearchAlgorithm {
         this.currentSolution = new MySolution(path);
         bestSolution = currentSolution;
         bestResult = function.evaluate(bestSolution,null);
+        System.out.println("Initial result: " + bestResult);
     }
 
     @Override
     public double execute(int numberOfIterations) {
         currentResult = bestResult;
-        Move move = new SwapTwoPaths();
         for (int i = 0; i <= numberOfIterations; i++) {
+            Move move = new SwapTwoPaths();
+
             if (currentResult < bestResult) {
                 bestResult = currentResult;
                 bestSolution = (MySolution)currentSolution.clone();

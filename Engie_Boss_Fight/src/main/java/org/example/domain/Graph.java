@@ -8,12 +8,12 @@ import java.util.*;
 public class Graph {
     public HashMap<Integer, Node> nodes;
     public HashMap<Integer, Edge> edges;
-    public Set<Integer> lockedEdges;
-    public Set<Integer> unlockedEdges;
+    public List<Integer> lockedEdges;
+    public List<Integer> unlockedEdges;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
-        this.lockedEdges = new HashSet<>();
-        this.unlockedEdges = new HashSet<>();
+        this.lockedEdges = new ArrayList<>();
+        this.unlockedEdges = new ArrayList<>();
         this.nodes = nodes;
         this.edges = edges;
         transform();

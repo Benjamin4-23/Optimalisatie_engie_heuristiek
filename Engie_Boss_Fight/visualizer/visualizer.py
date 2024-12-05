@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons
 from enum import Enum
 
-DOT_SIZE = 3
+DOT_SIZE = 1.5
 LINE_WIDTH = 2.5
 
 nodeMap = {}
@@ -232,7 +232,7 @@ def read_node_output(filepath) -> list[ConnectionPoint]:
 
 if __name__ == "__main__":
     file = "bretigny_62p_1147n_1235e.json"
-    map = Map("../data/" + file, debug=True)
+    map = Map("../data/" + file, debug=False)
     real_edges = read_output("../output/output_" + file)
     node_edges = read_node_output("../output/output_" + file)
     map.add_layer("Real", MAP_COLORS.GREEN, real_edges, 0)
