@@ -254,6 +254,7 @@ public class Graph {
 
             // Process each edge of the current node
             for (Edge edge : currentNode.edges.values()) {
+
                 Node neighbor = edge.getOtherNode(currentNode.id);
 
                 double newCost = distances.get(currentNode.id) + edge.cost;
@@ -383,7 +384,7 @@ public class Graph {
         return false;
     }
 
-    public static List<Edge> findShortestPath(Node start, Node end) {
+    public static Path<Edge> findShortestPath(Node start, Node end) {
         Map<Node, Double> distances = new HashMap<>();
         Map<Node, Edge> previousEdge = new HashMap<>();
         PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(distances::get));
@@ -396,13 +397,18 @@ public class Graph {
 
             if (currentNode == end) {
                 // Construct the path
-                List<Edge> path = new LinkedList<>();
+                Path<Edge> path = new Path();
+                int unusedCost = 0;
                 Node pathNode = end;
                 while (previousEdge.containsKey(pathNode)) {
                     Edge edge = previousEdge.get(pathNode);
+                    if(!edge.isUsed){
+                        unusedCost += edge.cost;
+                    }
                     path.add(0, edge);
                     pathNode = edge.getOtherNode(pathNode.id);
                 }
+                path.cost = unusedCost;
                 return path;
             }
 
@@ -419,7 +425,7 @@ public class Graph {
         }
 
         // No path found
-        return Collections.emptyList();
+        return Path.empty();
     }
 
 
