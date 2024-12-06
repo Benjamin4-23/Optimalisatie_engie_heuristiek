@@ -38,7 +38,7 @@ public class SteepestDescent extends SearchAlgorithm {
                 System.out.println(bestResult);
             }
             else {
-                System.out.println("Undoing move");
+                //System.out.println("Undoing move");
                 move.undoMove(currentSolution);
             }
 
