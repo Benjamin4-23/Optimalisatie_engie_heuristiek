@@ -32,6 +32,23 @@ public class Graph {
         simplify();
         System.out.println("Number of nodes-edges after second simplification: " + this.nodes.size() + "-" + this.edges.size());
 
+        StringBuilder jsonBuffer = new StringBuilder();
+        jsonBuffer.append("{\"nodes\":[");
+        for (Edge edge : this.edges.values()) {
+            if (edge.endNode1.x != 0 && edge.endNode1.y != 0 && edge.endNode2.x != 0 && edge.endNode2.y != 0) {
+                jsonBuffer.append(String.format("[%d,%d],", edge.endNode1.id, edge.endNode2.id));
+            }
+        }
+        if (!this.edges.isEmpty()) {
+            jsonBuffer.setLength(jsonBuffer.length() - 1);
+        }
+        jsonBuffer.append("]}");
+        try {
+            Files.write(Paths.get("./output/edges_after_shave.json"), jsonBuffer.toString().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         lockEdges();
         System.out.println("\nLocked " + this.lockedEdges.size() + " prospect connections, " + this.unlockedEdges.size() + " unlocked edges left.");
     }
@@ -312,7 +329,7 @@ public class Graph {
         return cost;
     }
 
-    public Double reconnect() {
+    /*public Double reconnect() {
         double cost = 0.0;
         // Create a priority queue to store edges, sorted by cost
         PriorityQueue<Edge> edgeQueue = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.cost));
@@ -369,7 +386,79 @@ public class Graph {
             }
         }
 
-    return cost;
+        return cost;
+    }*/
+
+    public Double reconnect() {
+        Node rootNode = nodes.get(-1);
+        double totalCost = 0.0;
+        PriorityQueue<Edge> edgeQueue = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.cost));
+        Set<Integer> connectedNodes = new HashSet<>();
+        Set<Integer> prospectsToConnect = new HashSet<>();
+
+        // Add all PROSPECT nodes to the set to track connection
+        for (Node node : nodes.values()) {
+            if (node.nodeType == NodeType.PROSPECT) {
+                prospectsToConnect.add(node.referenced.id);
+            }
+        }
+
+        // Add the root node to the connected set
+        connectedNodes.add(rootNode.id);
+
+        // Add all edges of the root node to the priority queue
+        for (Edge edge : rootNode.edges.values()) {
+            if (!usedEdges.containsKey(edge.id)) {
+                edgeQueue.add(edge);
+            }
+        }
+
+        // While there are still PROSPECT nodes to connect
+        while (!prospectsToConnect.isEmpty()) {
+            // If the queue is empty but there are PROSPECT nodes left, return infinity
+            if (edgeQueue.isEmpty()) {
+                System.out.printf("KAN NIET VERBONDEN WORDEN%n");
+                return Double.POSITIVE_INFINITY;
+            }
+
+            // Get the minimum cost edge
+            Edge edge = edgeQueue.poll();
+
+            // Check if this edge connects a new node
+            Node node1 = edge.endNode1;
+            Node node2 = edge.endNode2;
+            Node nextNode = null;
+
+            if (connectedNodes.contains(node1.id) && !connectedNodes.contains(node2.id)) {
+                nextNode = node2;
+            } else if (connectedNodes.contains(node2.id) && !connectedNodes.contains(node1.id)) {
+                nextNode = node1;
+            }
+
+            // If the edge does not connect a new node, skip it
+            if (nextNode == null) {
+                continue;
+            }
+
+            // Add the node to the connected set
+            connectedNodes.add(nextNode.id);
+
+            // Remove the node from prospectsToConnect if it's a PROSPECT
+            prospectsToConnect.remove(nextNode.id);
+
+            // Add the cost of the edge to the total cost
+            totalCost += edge.cost;
+
+            // Add all valid edges of the new node to the priority queue
+            for (Edge nextEdge : nextNode.edges.values()) {
+                if (!usedEdges.containsKey(nextEdge.id) && !connectedNodes.contains(nextEdge.getOtherNode(nextNode.id).id)) {
+                    edgeQueue.add(nextEdge);
+                }
+            }
+        }
+
+        return totalCost;
     }
+
 
 }
