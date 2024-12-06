@@ -242,7 +242,7 @@ public class Graph {
 
 
     public Double dijkstra() {
-        double cost = 0;
+        double cost = 0.0;
         // Make sure all edges are unused
         for (Edge edge : edges.values()) {
             edge.disgard();
@@ -312,7 +312,8 @@ public class Graph {
         return cost;
     }
 
-    public void reconnect() {
+    public Double reconnect() {
+        double cost = 0.0;
         // Create a priority queue to store edges, sorted by cost
         PriorityQueue<Edge> edgeQueue = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.cost));
 
@@ -347,6 +348,7 @@ public class Graph {
                 if (bestEdge != null) {
                     bestEdge.use(); // Mark the edge as used
                     usedEdges.put(bestEdge.id, bestEdge);
+                    cost += bestEdge.cost;
                     connectedNodes.add(prospect.id); // Mark the prospect as connected
                 } else {
                     // Optional: handle cases where a prospect cannot be connected
@@ -354,6 +356,8 @@ public class Graph {
                 }
             }
         }
+
+    return cost;
     }
 
 }

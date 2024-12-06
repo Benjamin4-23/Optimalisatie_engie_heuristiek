@@ -81,7 +81,7 @@ public class SwapTwoPaths extends Move{
         return cost;
     }
     private double calculateDeltaEvaluation() {
-        this.graph.reconnect();
+        double cost = this.graph.reconnect();
         double newCost = calculateEvaluation();
         this.delta = newCost - oldCost;
         double currentResult = solution.getObjectiveValue();
