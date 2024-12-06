@@ -329,7 +329,7 @@ public class Graph {
         return cost;
     }
 
-    /*public Double reconnect() {
+    public Double reconnect() {
         double cost = 0.0;
         // Create a priority queue to store edges, sorted by cost
         PriorityQueue<Edge> edgeQueue = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.cost));
@@ -387,9 +387,9 @@ public class Graph {
         }
 
         return cost;
-    }*/
+    }
 
-    public Double reconnect() {
+    /*public Double reconnect() {
         Node rootNode = nodes.get(-1);
         double totalCost = 0.0;
         PriorityQueue<Edge> edgeQueue = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.cost));
@@ -458,7 +458,7 @@ public class Graph {
         }
 
         return totalCost;
-    }
+    }*/
 
 
 }
