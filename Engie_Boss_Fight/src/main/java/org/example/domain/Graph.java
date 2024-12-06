@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Graph {
     public HashMap<Integer, Node> nodes;
@@ -53,22 +54,24 @@ public class Graph {
         this.usedEdges = new HashMap<>(other.usedEdges);
     }
 
-    public void transform(){
+    public void transform() {
         int rootId = -1;
         Node rootNode = new Node(rootId, 0.0, 0.0, NodeType.REGULAR); // ID -1 for the virtual root
 
         int i = -1;
         Set<Integer> visitedNode = new HashSet<>();
-        for (Edge edge: edges.values()){
-            if(edge.edgeType == EdgeType.EXISTING){
-                if(!visitedNode.add(edge.endNode1.id)){
+        for (Edge edge : edges.values()) {
+            if (edge.edgeType == EdgeType.EXISTING) {
+                if (!visitedNode.add(edge.endNode1.id)) {
                     Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode1);
                     rootNode.edges.put(i--, edgeFromRoot);
-                };
-                if(!visitedNode.add(edge.endNode2.id)){
+                }
+                ;
+                if (!visitedNode.add(edge.endNode2.id)) {
                     Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode2);
                     rootNode.edges.put(i--, edgeFromRoot);
-                };
+                }
+                ;
             }
         }
 
@@ -99,10 +102,10 @@ public class Graph {
             }
 
             List<Edge> removeEdges = new ArrayList<>();
-            for (Edge e: node.edges.values()){
-                if(e.endNode2 == e.endNode1) removeEdges.add(e);
+            for (Edge e : node.edges.values()) {
+                if (e.endNode2 == e.endNode1) removeEdges.add(e);
             }
-            for (Edge e: removeEdges){
+            for (Edge e : removeEdges) {
                 node.edges.remove(e.id);
             }
 
@@ -152,7 +155,7 @@ public class Graph {
         this.edges = simplifiedEdges;
     }
 
-    public void shave(){
+    public void shave() {
         HashMap<Integer, Edge> simplifiedEdges = new HashMap<>(edges);
         int numberOfEdgesRemoved;
         do {
@@ -164,7 +167,7 @@ public class Graph {
                     continue;
                 }
 
-                if(node.edges.size() == 1){
+                if (node.edges.size() == 1) {
                     List<Edge> edges = new ArrayList<>(node.edges.values());
                     Edge edge = edges.get(0);
 
@@ -190,10 +193,9 @@ public class Graph {
         this.edges = simplifiedEdges;
 
 
-
     }
 
-    private void lockEdges(){
+    private void lockEdges() {
         for (Edge edge : edges.values()) {
             Node node1 = edge.endNode1;
             Node node2 = edge.endNode2;
@@ -201,29 +203,29 @@ public class Graph {
             if (edge.edgeType == EdgeType.EXISTING || node1.nodeType == NodeType.PROSPECT || node2.nodeType == NodeType.PROSPECT) {
                 edge.lock();
                 this.lockedEdges.add(edge.id);
-            }else{
+            } else {
                 edge.unlock();
                 this.unlockedEdges.add(edge.id);
             }
         }
     }
 
-    private void clearNodes(){
+    private void clearNodes() {
         Set<Integer> visitedNodes = new HashSet<>();
         Collection<Edge> edges = nodes.get(-1).edges.values();
         List<Edge> removeEdges = new ArrayList<>();
         for (Node node : nodes.values()) {
             if (node.edges.isEmpty() && node.id != -1) {
                 visitedNodes.add(node.id);
-                for (Edge e: edges){
-                    if(e.endNode2.id == node.id || e.endNode1.id == node.id){
-                       removeEdges.add(e);
+                for (Edge e : edges) {
+                    if (e.endNode2.id == node.id || e.endNode1.id == node.id) {
+                        removeEdges.add(e);
                     }
                 }
             }
         }
 
-        for (Edge e : removeEdges){
+        for (Edge e : removeEdges) {
             edges.remove(e);
         }
 
@@ -237,8 +239,6 @@ public class Graph {
     protected Object clone() {
         return new Graph(this);
     }
-
-
 
 
     public Map<Node, Double> dijkstra() {
@@ -262,7 +262,7 @@ public class Graph {
 
         while (!pq.isEmpty()) {
             Node currentNode = pq.poll();
-            if(currentNode.nodeType == NodeType.PROSPECT) continue;
+            if (currentNode.nodeType == NodeType.PROSPECT) continue;
 
             // Process each edge of the current node
             for (Edge edge : currentNode.edges.values()) {
@@ -295,7 +295,7 @@ public class Graph {
                 while (previousEdges.containsKey(pathNode.id)) {
                     Edge pathEdge = previousEdges.get(pathNode.id);
                     pathEdge.use(); // Mark edge as used
-                    if(!(pathEdge.endNode1.id == rootNode.id) && !(pathEdge.endNode2.id == rootNode.id)){
+                    if (!(pathEdge.endNode1.id == rootNode.id) && !(pathEdge.endNode2.id == rootNode.id)) {
                         this.usedEdges.put(pathEdge.id, pathEdge);
                     }
                     pathNode = (pathEdge.endNode1 == pathNode) ? pathEdge.endNode2 : pathEdge.endNode1;
@@ -349,89 +349,5 @@ public class Graph {
             }
         }
     }
-
-
-    public static List<List<Edge>> BFS(Node start, Node end) {
-        //return all unique paths
-        List<List<Edge>> allPaths = new ArrayList<>();
-        Queue<List<Edge>> queue = new LinkedList<>();
-        queue.add(new ArrayList<>());
-
-        while (!queue.isEmpty()) {
-            List<Edge> currentPath = queue.poll();
-            Node currentNode = currentPath.isEmpty() ? start : currentPath.get(currentPath.size() - 1).getOtherNode(start.id);
-
-            if (currentNode.id == end.id) {
-                allPaths.add(new ArrayList<>(currentPath));
-                continue;
-            }
-
-            for (Edge edge : currentNode.edges.values()) {
-                Node neighbor = edge.getOtherNode(currentNode.id);
-
-                if (!isNodeInPath(currentPath, neighbor.id)) {
-                    List<Edge> newPath = new ArrayList<>(currentPath);
-                    newPath.add(edge);
-                    queue.add(newPath);
-                }
-            }
-        }
-
-        return allPaths;
-    }
-
-    private static boolean isNodeInPath(List<Edge> path, int nodeId) {
-        for (Edge edge : path) {
-            if (edge.endNode1.id == nodeId || edge.endNode2.id == nodeId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static Path<Edge> findShortestPath(Node start, Node end) {
-        Map<Node, Double> distances = new HashMap<>();
-        Map<Node, Edge> previousEdge = new HashMap<>();
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(distances::get));
-
-        distances.put(start, 0.0);
-        pq.add(start);
-
-        while (!pq.isEmpty()) {
-            Node currentNode = pq.poll();
-
-            if (currentNode == end) {
-                // Construct the path
-                Path<Edge> path = new Path();
-                int unusedCost = 0;
-                Node pathNode = end;
-                while (previousEdge.containsKey(pathNode)) {
-                    Edge edge = previousEdge.get(pathNode);
-                    if(!edge.isUsed){
-                        unusedCost += edge.cost;
-                    }
-                    path.add(0, edge);
-                    pathNode = edge.getOtherNode(pathNode.id);
-                }
-                path.cost = unusedCost;
-                return path;
-            }
-
-            for (Edge edge : currentNode.edges.values()) {
-                Node neighbor = edge.getOtherNode(currentNode.id);
-                double newDist = distances.getOrDefault(currentNode, Double.POSITIVE_INFINITY) + edge.cost;
-
-                if (newDist < distances.getOrDefault(neighbor, Double.POSITIVE_INFINITY)) {
-                    distances.put(neighbor, newDist);
-                    previousEdge.put(neighbor, edge);
-                    pq.add(neighbor);
-                }
-            }
-        }
-
-        // No path found
-        return Path.empty();
-    }
-
 
 }

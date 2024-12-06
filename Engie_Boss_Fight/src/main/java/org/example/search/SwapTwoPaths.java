@@ -10,33 +10,36 @@ import java.util.*;
 
 public class SwapTwoPaths extends Move{
     private Solution solution;
-    private HashMap<Integer, Edge> oldEdges;
+    private HashMap<Integer, Edge> oldEdges = new HashMap<>();;
     private  Graph graph;
     private double delta;
     private double disgardedCost = 0.0;
     private double oldCost = 0.0;
     List<Integer> indexes = new ArrayList<>();
-    List<Integer> disgardedEdges = new ArrayList<>();
+    Set<Integer> disgardedEdges = new HashSet<>();
 
     @Override
     public double doMove(Solution solution) {
+        this.disgardedCost = 0.0;
+        this.delta = 0.0;
+        this.indexes.clear();
         this.solution = solution;
+
         oldCost = solution.getObjectiveValue();
-
-
-        // Select subset of paths
         graph = ((MySolution) solution).getGraph();
         this.oldEdges = new HashMap<>(graph.usedEdges);
 
-
+        // Get 5 random edges from graph.unlockedEdges
         for (int i = 0; i < 10; i++) {
-            // Get 5 random edges from graph.unlockedEdges
+            int counter = 0;
             int randomIndex = 0;
             do{
                 randomIndex = (int) (Math.random() * this.graph.unlockedEdges.size());
+                counter++;
             }while(indexes.contains(randomIndex) ||
                     !this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||
-                    this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isLocked);
+                    this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isLocked ||
+                    counter < 20);
             indexes.add(this.graph.unlockedEdges.get(randomIndex));
         }
 
