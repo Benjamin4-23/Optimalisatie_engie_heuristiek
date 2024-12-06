@@ -56,6 +56,7 @@ public class SwapTwoPaths extends Move{
 
     @Override
     public void undoMove(Solution solution) {
+        this.graph = ((MySolution) solution).getGraph();
         for(Edge edge : this.graph.edges.values()){
             edge.disgard();
         }
