@@ -22,7 +22,8 @@ public class SteepestDescent extends SearchAlgorithm {
         this.function = new MyObjectiveFunction();
         this.currentSolution = new MySolution(path);
         this.bestSolution = this.currentSolution;
-        this.bestResult = this.function.evaluate(this.bestSolution, null);
+        //this.bestResult = this.function.evaluate(this.bestSolution, null);
+        this.bestResult = this.currentSolution.getObjectiveValue();
         System.out.println("Initial result: " + bestResult);
     }
     @Override

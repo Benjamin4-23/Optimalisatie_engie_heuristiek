@@ -241,7 +241,8 @@ public class Graph {
     }
 
 
-    public Map<Node, Double> dijkstra() {
+    public Double dijkstra() {
+        double cost = 0;
         // Make sure all edges are unused
         for (Edge edge : edges.values()) {
             edge.disgard();
@@ -281,12 +282,12 @@ public class Graph {
         }
 
         // Collect distances for prospects
-        Map<Node, Double> prospectDistances = new HashMap<>();
+        /*Map<Node, Double> prospectDistances = new HashMap<>();
         for (Node node : nodes.values()) {
             if (node.nodeType == NodeType.PROSPECT) {
                 prospectDistances.put(node, distances.get(node.id));
             }
-        }
+        }*/
 
         // Optional: Mark paths and edges used for prospects
         for (Node prospect : nodes.values()) {
@@ -303,7 +304,12 @@ public class Graph {
             }
         }
 
-        return prospectDistances;
+        // Calculate total cost
+        for (Edge edge : usedEdges.values()) {
+            cost += edge.cost;
+        }
+
+        return cost;
     }
 
     public void reconnect() {

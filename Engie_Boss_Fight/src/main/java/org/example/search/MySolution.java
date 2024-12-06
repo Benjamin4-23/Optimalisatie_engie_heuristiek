@@ -48,7 +48,7 @@ public class MySolution implements Solution {
     }
 
     public void GenerateSolution() {
-        graph.dijkstra();
+        this.setObjectiveValue(this.graph.dijkstra());
     }
 
     public Graph getGraph() {
