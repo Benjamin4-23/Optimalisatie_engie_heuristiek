@@ -325,19 +325,31 @@ public class Graph {
         // Track connected nodes (nodes already in the existing network)
         Set<Integer> connectedNodes = new HashSet<>();
         for (Edge edge : usedEdges.values()) {
-            connectedNodes.add(edge.endNode1.id);
-            connectedNodes.add(edge.endNode2.id);
+            if(edge.isLocked){
+                if(edge.endNode2.nodeType == NodeType.PROSPECT){
+                    connectedNodes.add(edge.endNode2.id);
+                } else if(edge.endNode1.nodeType == NodeType.PROSPECT) {
+                    connectedNodes.add(edge.endNode1.id);
+                } else {
+                    connectedNodes.add(edge.endNode1.id);
+                    connectedNodes.add(edge.endNode2.id);
+                }
+            }else {
+                connectedNodes.add(edge.endNode1.id);
+                connectedNodes.add(edge.endNode2.id);
+            }
         }
 
         // Iterate over all disconnected PROSPECT nodes
         for (Node prospect : nodes.values()) {
-            if (prospect.nodeType == NodeType.PROSPECT && !connectedNodes.contains(prospect.id)) {
+            if (prospect.nodeType == NodeType.PROSPECT && !connectedNodes.contains(prospect.referenced.id)) {
                 Edge bestEdge = null;
                 double minCost = Double.POSITIVE_INFINITY;
+                Node reference = prospect.referenced;
 
                 // Find the minimum cost edge connecting this prospect to the existing network
-                for (Edge edge : prospect.edges.values()) {
-                    Node otherNode = edge.getOtherNode(prospect.id);
+                for (Edge edge : reference.edges.values()) {
+                    Node otherNode = edge.getOtherNode(reference.id);
                     if (connectedNodes.contains(otherNode.id) && edge.cost < minCost) {
                         bestEdge = edge;
                         minCost = edge.cost;

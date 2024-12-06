@@ -71,11 +71,21 @@ public class Edge {
         for (Edge edge : oldEdges) {
             edge.isLocked = true;
         }
+        if(endNode1.nodeType == NodeType.PROSPECT){
+            endNode1.referenced = endNode2;
+        } else if (endNode2.nodeType == NodeType.PROSPECT){
+            endNode2.referenced = endNode1;
+        }
     }
     public void unlock(){
         this.isLocked = false;
         for (Edge edge : oldEdges) {
             edge.isLocked = false;
+        }
+        if(endNode1.nodeType == NodeType.PROSPECT){
+            endNode1.referenced = endNode1;
+        } else if (endNode2.nodeType == NodeType.PROSPECT){
+            endNode2.referenced = endNode2;
         }
     }
 
