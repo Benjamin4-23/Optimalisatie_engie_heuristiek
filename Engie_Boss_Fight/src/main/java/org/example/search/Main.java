@@ -11,7 +11,7 @@ public class Main {
         if (args.length == 2) {
             // via validator
             String path = args[0];
-            SearchAlgorithm alg = new SimulatedAnnealing(path);
+            SearchAlgorithm alg = new SteepestDescent(path);
             alg.execute(1000);
             MySolution bestSolution = (MySolution) alg.getBestSolution();
             OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
@@ -21,8 +21,8 @@ public class Main {
 
         //normal run
         String file = "bretigny_62p_1147n_1235e.json";
-        SearchAlgorithm alg = new SimulatedAnnealing("data/" + file);
-        alg.execute(100000);
+        SearchAlgorithm alg = new SteepestDescent("data/" + file);
+        alg.execute(1000);
         MySolution bestSolution = (MySolution) alg.getBestSolution();
         OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
         writer.write("output/output_" + file);
