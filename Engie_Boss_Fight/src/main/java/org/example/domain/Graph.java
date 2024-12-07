@@ -10,16 +10,12 @@ public class Graph {
     public HashMap<Integer, Edge> edges;
     public List<Integer> lockedEdges;
     public List<Integer> unlockedEdges;
-    public HashMap<Integer, Edge> usedEdges;
-    public HashMap<Integer, Node> usedNodes;
-    public HashMap<Integer, ReconnectPair> reconnects;
+    public Map<Integer, Edge> usedEdges;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.lockedEdges = new ArrayList<>();
         this.unlockedEdges = new ArrayList<>();
         this.usedEdges = new HashMap<>();
-        this.usedNodes = new HashMap<>();
-        reconnects = new HashMap<>();
         this.nodes = nodes;
         this.edges = edges;
         transform();
@@ -52,13 +48,14 @@ public class Graph {
             e.printStackTrace();
         }
 
-        lockEdges();
+        //lockEdges();
         System.out.println("\nLocked " + this.lockedEdges.size() + " prospect connections, " + this.unlockedEdges.size() + " unlocked edges left.");
     }
 
     public Graph(Graph other) {
         // Deep copy of nodes
         this.nodes = new HashMap<>();
+        this.usedEdges = new HashMap<>(other.usedEdges);
         for (Integer key : other.nodes.keySet()) {
             this.nodes.put(key, new Node(other.nodes.get(key))); // Assuming Node has a copy constructor
         }
@@ -71,9 +68,6 @@ public class Graph {
 
         this.lockedEdges = new ArrayList<>(other.lockedEdges);
         this.unlockedEdges = new ArrayList<>(other.unlockedEdges);
-        this.usedEdges = new HashMap<>(other.usedEdges);
-        this.usedNodes = new HashMap<>(other.usedNodes);
-        this.reconnects = new HashMap<>(other.reconnects);
     }
 
     public void transform() {
@@ -215,7 +209,7 @@ public class Graph {
 
     }
 
-    private void lockEdges() {
+    /*private void lockEdges() {
         for (Edge edge : edges.values()) {
             Node node1 = edge.endNode1;
             Node node2 = edge.endNode2;
@@ -228,7 +222,7 @@ public class Graph {
                 this.unlockedEdges.add(edge.id);
             }
         }
-    }
+    }*/
 
     private void clearNodes() {
         Set<Integer> visitedNodes = new HashSet<>();
@@ -268,7 +262,6 @@ public class Graph {
             edge.disgard();
         }
         this.usedEdges.clear();
-        this.usedNodes.clear();
 
         Node rootNode = nodes.get(-1);
         Map<Integer, Double> distances = new HashMap<>();
@@ -311,12 +304,6 @@ public class Graph {
                     pathEdge.use(); // Mark edge as used
                     if (pathEdge.endNode1.id != rootNode.id && pathEdge.endNode2.id != rootNode.id) {
                         this.usedEdges.put(pathEdge.id, pathEdge);
-                        if(pathEdge.endNode1.nodeType != NodeType.PROSPECT) {
-                            this.usedNodes.put(pathEdge.endNode1.id, pathEdge.endNode1);
-                        }
-                        if(pathEdge.endNode2.nodeType != NodeType.PROSPECT) {
-                            this.usedNodes.put(pathEdge.endNode2.id, pathEdge.endNode2);
-                        }
                     }
                     pathNode = pathEdge.getOtherNode(pathNode.id);
                 }
@@ -330,76 +317,5 @@ public class Graph {
 
         return cost;
     }
-
-    public Double reconnect() {
-        double cost = 0.0;
-        for (ReconnectPair pair : reconnects.values()){
-            double pathCost = findPath(pair.start, pair.end);
-            if(pathCost == Double.POSITIVE_INFINITY){
-                // replace original edge
-                pathCost = 0;
-                for (int id : pair.ids){
-                    Edge edge = this.edges.get(id);
-                    edge.use();
-                    edge.isBlocked = false;
-                    pathCost += edge.cost;
-                }
-            }
-            cost += pathCost;
-        }
-        return cost;
-    }
-
-    private Double findPath(Node start, Node end){
-        Map<Integer, Double> visited = new HashMap<>();
-        Map<Integer, Edge> previousEdges = new HashMap<>();
-        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(node -> visited.getOrDefault(node.id, Double.POSITIVE_INFINITY)));
-        pq.add(start);
-        visited.put(start.id, 0.0);
-        boolean found = false;
-
-        while (!pq.isEmpty()) {
-            Node currentNode = pq.poll();
-
-            double cost = visited.get(currentNode.id);
-
-            if (currentNode == end) {
-                // can connect to end
-                found = true;
-                break;
-            }
-
-            for (Edge edge : currentNode.edges.values()) {
-                if (edge.isBlocked) continue;
-
-                Node neighbor = edge.getOtherNode(currentNode.id);
-                Double newCost = cost + edge.cost;
-
-                if (!visited.containsKey(neighbor.id) || visited.get(neighbor.id) > newCost) {
-                    visited.put(neighbor.id, newCost);
-                    previousEdges.put(neighbor.id, edge);
-                    pq.add(neighbor);
-                }
-            }
-        }
-
-        if(found){
-            //mark path
-            double cost = 0.0;
-            Node pathNode = end;
-            while (previousEdges.containsKey(pathNode.id)) {
-                Edge pathEdge = previousEdges.get(pathNode.id);
-                pathEdge.use();
-                cost += pathEdge.cost;
-                pathNode = pathEdge.getOtherNode(pathNode.id);
-            }
-            return cost;
-        }
-
-        //return infinity if no path found
-        return Double.POSITIVE_INFINITY;
-    }
-
-
 
 }

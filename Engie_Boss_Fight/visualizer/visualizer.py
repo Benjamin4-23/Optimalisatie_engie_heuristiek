@@ -232,7 +232,7 @@ def read_node_output(filepath) -> list[ConnectionPoint]:
 
 if __name__ == "__main__":
     file = "bretigny_62p_1147n_1235e.json"
-    map = Map("../data/" + file, debug=True)
+    map = Map("../data/" + file, debug=False)
     real_edges = read_output("../output/output_" + file)
     node_edges = read_node_output("../output/output_" + file)
     node_dijkstra_edges = read_node_output("../output/output_bretigny_62p_1147n_1235e_dijkstra.json")
