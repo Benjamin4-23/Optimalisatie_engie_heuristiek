@@ -15,7 +15,7 @@ public class SwapTwoPaths extends Move{
     private double oldCost = 0.0;
     List<Integer> indexes = new ArrayList<>();
     Set<Integer> disgardedEdges = new HashSet<>();
-    Set<Edge> unblockEdges = new HashSet<>();
+    Set<Edge> blockedEdges = new HashSet<>();
 
     @Override
     public double doMove(Solution solution) {
@@ -23,7 +23,7 @@ public class SwapTwoPaths extends Move{
         this.delta = 0.0;
         this.indexes.clear();
         this.solution = solution;
-        this.unblockEdges.clear();
+        this.blockedEdges.clear();
 
         this.oldCost = solution.getObjectiveValue();
         this.graph = ((MySolution) solution).getGraph();
@@ -66,10 +66,10 @@ public class SwapTwoPaths extends Move{
             this.graph.edges.get(edge.id).use();
             this.graph.usedEdges.put(edge.id, edge);
         }
-        for(Edge edge: unblockEdges){
+        for(Edge edge: blockedEdges){
             edge.isBlocked = false;
         }
-        this.unblockEdges.clear();
+        this.blockedEdges.clear();
         solution.setObjectiveValue(oldCost);
     }
 
@@ -102,7 +102,7 @@ public class SwapTwoPaths extends Move{
     }
 
     private void setReconnect(Edge edge){
-        this.unblockEdges.add(edge);
+        this.blockedEdges.add(edge);
         edge.isBlocked = true;
         this.graph.reconnects.add(new ReconnectPair(edge));
         return;
