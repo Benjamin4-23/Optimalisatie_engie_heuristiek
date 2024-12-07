@@ -31,7 +31,7 @@ public class SwapTwoPaths extends Move{
 
         //List<Edge> temp = new ArrayList<>(this.graph.unlockedEdges);
         // Get 5 random edges from graph.unlockedEdges
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 25; i++) {
             int counter = 0;
             int randomIndex = 0;
             do{
