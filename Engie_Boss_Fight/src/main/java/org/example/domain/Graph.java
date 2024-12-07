@@ -215,8 +215,15 @@ public class Graph {
             Node node2 = edge.endNode2;
 
             if (edge.edgeType == EdgeType.EXISTING || node1.nodeType == NodeType.PROSPECT || node2.nodeType == NodeType.PROSPECT) {
-                edge.lock();
-                this.lockedEdges.add(edge.id);
+                // Only lock when the prospect node has only one edge
+                if (node1.nodeType == NodeType.PROSPECT && node1.edges.size() == 1) {
+                    lockEdge(edge);
+                    this.lockedEdges.add(edge.id);
+                } else if (node2.nodeType == NodeType.PROSPECT && node2.edges.size() == 1) {
+                    lockEdge(edge);
+                    this.lockedEdges.add(edge.id);
+
+                }
             } else {
                 edge.unlock();
                 this.unlockedEdges.add(edge.id);
