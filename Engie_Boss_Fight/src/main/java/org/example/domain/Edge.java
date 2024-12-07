@@ -7,6 +7,7 @@ public class Edge {
     public int id;
     public EdgeType edgeType;
     public int cost;
+    public int originalCost;
     public boolean isUsed;
     public boolean isLocked;
 
@@ -25,6 +26,7 @@ public class Edge {
         this.id = edge.id;
         this.edgeType = edge.edgeType;
         this.cost = edge.cost;
+        this.originalCost = edge.originalCost;
         this.endNode1 = edge.endNode1;
         this.endNode2 = edge.endNode2;
         this.isUsed = edge.isUsed;
@@ -40,6 +42,7 @@ public class Edge {
         this.id = id;
         this.edgeType = edgeType;
         this.cost = cost;
+        this.originalCost = cost;
         this.endNode1 = endpoint1;
         this.endNode2 = endpoint2;
         this.isUsed = false;

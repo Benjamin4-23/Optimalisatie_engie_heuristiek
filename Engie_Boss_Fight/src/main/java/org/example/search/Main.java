@@ -23,7 +23,7 @@ public class Main {
         //generate normal dijkstra file
         String file = "bretigny_62p_1147n_1235e.json";
         SearchAlgorithm alg = new SteepestDescent("data/" + file);
-        alg.execute(10000);
+        alg.execute(100000);
         MySolution bestSolution = (MySolution) alg.getBestSolution();
         OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
         writer.write("output/output_" + file);

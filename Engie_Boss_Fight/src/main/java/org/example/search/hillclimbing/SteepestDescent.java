@@ -32,7 +32,7 @@ public class SteepestDescent extends SearchAlgorithm {
         Move move = new SwapTwoPaths();
         for (int i = 0; i < numberOfIterations; i++) {
             currentResult = function.evaluate(currentSolution, move);
-            if (currentResult <= bestResult) {
+            if (currentResult < bestResult) {
                 bestResult = currentResult;
                 System.out.println("New best result: " + bestResult);
                 bestSolution = new MySolution(currentSolution);
