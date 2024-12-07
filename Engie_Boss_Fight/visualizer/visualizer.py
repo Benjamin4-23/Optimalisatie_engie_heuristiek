@@ -232,13 +232,13 @@ def read_node_output(filepath) -> list[ConnectionPoint]:
 
 if __name__ == "__main__":
     file = "bretigny_62p_1147n_1235e.json"
-    map = Map("../data/" + file, debug=True)
+    map = Map("../data/" + file, debug=False)
     real_edges = read_output("../output/output_" + file)
     node_edges = read_node_output("../output/output_" + file)
     node_dijkstra_edges = read_node_output("../output/output_bretigny_62p_1147n_1235e_dijkstra.json")
     node_shave_edges = read_node_output("../output/edges_after_shave.json")
     #map.add_layer("Real", MAP_COLORS.GREEN, real_edges, 0)
-    map.add_layer("Simple EDGES", MAP_COLORS.BROWN, node_shave_edges, 0)
-    map.add_layer("Simple Dijkstra", MAP_COLORS.CYAN, node_dijkstra_edges, 1)
-    map.add_layer("Simple", MAP_COLORS.PINK, node_edges, 2)
+    map.add_layer("Simplified map", MAP_COLORS.BROWN, node_shave_edges, 0)
+    map.add_layer("Solution", MAP_COLORS.CYAN, node_dijkstra_edges, 1)
+    map.add_layer("Simplified Solution", MAP_COLORS.PINK, node_edges, 2)
     map.visualize()

@@ -89,6 +89,10 @@ public class Edge {
         }
     }
 
+    public boolean connects(Node node1, Node node2){
+        return (endNode1 == node1 && endNode2 == node2) || (endNode1 == node2 && endNode2 == node1);
+    }
+
     public Node getOtherNode(int id){
         return endNode1.id == id ? endNode2 : endNode1;
     }
