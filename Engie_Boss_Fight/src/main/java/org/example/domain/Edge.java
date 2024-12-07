@@ -19,6 +19,7 @@ public class Edge {
     public int replaceableCost;
     List<Edge> replacingEdges;
     public boolean isMoved;
+    public boolean isBlocked = false;
 
     public Edge(Edge edge) {
         this.id = edge.id;
@@ -72,9 +73,9 @@ public class Edge {
             edge.isLocked = true;
         }
         if(endNode1.nodeType == NodeType.PROSPECT){
-            endNode1.referenced = endNode2;
+            endNode1.reference = endNode2;
         } else if (endNode2.nodeType == NodeType.PROSPECT){
-            endNode2.referenced = endNode1;
+            endNode2.reference = endNode1;
         }
     }
     public void unlock(){
@@ -83,9 +84,9 @@ public class Edge {
             edge.isLocked = false;
         }
         if(endNode1.nodeType == NodeType.PROSPECT){
-            endNode1.referenced = endNode1;
+            endNode1.reference = endNode1;
         } else if (endNode2.nodeType == NodeType.PROSPECT){
-            endNode2.referenced = endNode2;
+            endNode2.reference = endNode2;
         }
     }
 

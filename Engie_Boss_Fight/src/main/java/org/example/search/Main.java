@@ -30,7 +30,7 @@ public class Main {
 
         //normal run
         alg = new SteepestDescent("data/" + file);
-        alg.execute(5);
+        alg.execute(1000);
         bestSolution = (MySolution) alg.getBestSolution();
         writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
         writer.write("output/output_" + file);

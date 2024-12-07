@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Graph {
     public HashMap<Integer, Node> nodes;
@@ -13,12 +12,14 @@ public class Graph {
     public List<Integer> unlockedEdges;
     public HashMap<Integer, Edge> usedEdges;
     public HashMap<Integer, Node> usedNodes;
+    public ArrayList<ReconnectPair> reconnects;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.lockedEdges = new ArrayList<>();
         this.unlockedEdges = new ArrayList<>();
         this.usedEdges = new HashMap<>();
         this.usedNodes = new HashMap<>();
+        reconnects = new ArrayList<>();
         this.nodes = nodes;
         this.edges = edges;
         transform();
@@ -72,6 +73,7 @@ public class Graph {
         this.unlockedEdges = new ArrayList<>(other.unlockedEdges);
         this.usedEdges = new HashMap<>(other.usedEdges);
         this.usedNodes = new HashMap<>(other.usedNodes);
+        this.reconnects = new ArrayList<>(other.reconnects);
     }
 
     public void transform() {
@@ -86,12 +88,10 @@ public class Graph {
                     Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode1);
                     rootNode.edges.put(i--, edgeFromRoot);
                 }
-                ;
                 if (!visitedNode.add(edge.endNode2.id)) {
                     Edge edgeFromRoot = new Edge(i, EdgeType.EXISTING, 0, rootNode, edge.endNode2);
                     rootNode.edges.put(i--, edgeFromRoot);
                 }
-                ;
             }
         }
 
@@ -302,22 +302,13 @@ public class Graph {
             }
         }
 
-        // Collect distances for prospects
-        /*Map<Node, Double> prospectDistances = new HashMap<>();
-        for (Node node : nodes.values()) {
-            if (node.nodeType == NodeType.PROSPECT) {
-                prospectDistances.put(node, distances.get(node.id));
-            }
-        }*/
-
-        // Optional: Mark paths and edges used for prospects
         for (Node prospect : nodes.values()) {
             if (prospect.nodeType == NodeType.PROSPECT) {
                 Node pathNode = prospect;
                 while (previousEdges.containsKey(pathNode.id)) {
                     Edge pathEdge = previousEdges.get(pathNode.id);
                     pathEdge.use(); // Mark edge as used
-                    if (!(pathEdge.endNode1.id == rootNode.id) && !(pathEdge.endNode2.id == rootNode.id)) {
+                    if (pathEdge.endNode1.id != rootNode.id && pathEdge.endNode2.id != rootNode.id) {
                         this.usedEdges.put(pathEdge.id, pathEdge);
                         if(pathEdge.endNode1.nodeType != NodeType.PROSPECT) {
                             this.usedNodes.put(pathEdge.endNode1.id, pathEdge.endNode1);
@@ -326,7 +317,7 @@ public class Graph {
                             this.usedNodes.put(pathEdge.endNode2.id, pathEdge.endNode2);
                         }
                     }
-                    pathNode = (pathEdge.endNode1 == pathNode) ? pathEdge.endNode2 : pathEdge.endNode1;
+                    pathNode = pathEdge.getOtherNode(pathNode.id);
                 }
             }
         }
@@ -339,129 +330,72 @@ public class Graph {
         return cost;
     }
 
-    public double reconnect() {
+    public Double reconnect() {
         double cost = 0.0;
-        Set<Node> connectedNodes = getConnectedNodes(this, "EXISTING");
-        Set<Node> disconnectedNodes = getDisconnectedNodes(this, connectedNodes);
-
-        for (Node prospect : disconnectedNodes) {
-            Edge bestEdge = null;
-            double shortestDistance = Double.MAX_VALUE;
-
-            for (Node connectedNode : connectedNodes) {
-                for (Edge edge : prospect.edges.values()) {
-                    if (isValidEdge(edge) && edge.connects(prospect, connectedNode)) {
-                        double distance = edge.cost;
-                        if (distance < shortestDistance) {
-                            shortestDistance = distance;
-                            bestEdge = edge;
-                        }
-                    }
-                }
+        for (ReconnectPair pair : reconnects){
+            double pathCost = findPath(pair.start, pair.end);
+            if(pathCost == Double.POSITIVE_INFINITY){
+                // replace original edge
+                Edge edge = this.edges.get(pair.originalId);
+                edge.use();
+                edge.isBlocked = false;
+                pathCost = edge.cost;
             }
-
-            if (bestEdge != null) {
-                bestEdge.use(); // Mark edge as used
-                cost += bestEdge.cost;
-                connectedNodes.add(prospect); // Update the connected component
-            }
+            cost += pathCost;
         }
         return cost;
     }
 
-    private Set<Node> getConnectedNodes(Graph graph, String edgeType) {
-        Set<Node> connectedNodes = new HashSet<>();
-        for (Edge edge : graph.edges.values()) {
-            if (edge.edgeType == EdgeType.valueOf(edgeType) && edge.isUsed) {
-                connectedNodes.add(edge.endNode1);
-                connectedNodes.add(edge.endNode2);
-            }
-        }
-        return connectedNodes;
-    }
+    private Double findPath(Node start, Node end){
+        Map<Integer, Double> visited = new HashMap<>();
+        Map<Integer, Edge> previousEdges = new HashMap<>();
+        PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingDouble(node -> visited.getOrDefault(node.id, Double.POSITIVE_INFINITY)));
+        pq.add(start);
+        visited.put(start.id, 0.0);
+        boolean found = false;
 
-    private Set<Node> getDisconnectedNodes(Graph graph, Set<Node> connectedNodes) {
-        Set<Node> allNodes = new HashSet<>(graph.nodes.values());
-        allNodes.removeAll(connectedNodes);
-        return allNodes;
-    }
+        while (!pq.isEmpty()) {
+            Node currentNode = pq.poll();
 
-    private boolean isValidEdge(Edge edge) {
-        return edge.edgeType.equals("REGULAR"); // || edge.edgeType.equals("OFFSTREET");
-    }
+            double cost = visited.get(currentNode.id);
 
-
-
-    /*public Double reconnect() {
-        Node rootNode = nodes.get(-1);
-        double totalCost = 0.0;
-        PriorityQueue<Edge> edgeQueue = new PriorityQueue<>(Comparator.comparingDouble(edge -> edge.cost));
-        Set<Integer> connectedNodes = new HashSet<>();
-        Set<Integer> prospectsToConnect = new HashSet<>();
-
-        // Add all PROSPECT nodes to the set to track connection
-        for (Node node : nodes.values()) {
-            if (node.nodeType == NodeType.PROSPECT) {
-                prospectsToConnect.add(node.referenced.id);
-            }
-        }
-
-        // Add the root node to the connected set
-        connectedNodes.add(rootNode.id);
-
-        // Add all edges of the root node to the priority queue
-        for (Edge edge : rootNode.edges.values()) {
-            if (!usedEdges.containsKey(edge.id)) {
-                edgeQueue.add(edge);
-            }
-        }
-
-        // While there are still PROSPECT nodes to connect
-        while (!prospectsToConnect.isEmpty()) {
-            // If the queue is empty but there are PROSPECT nodes left, return infinity
-            if (edgeQueue.isEmpty()) {
-                System.out.printf("KAN NIET VERBONDEN WORDEN%n");
-                return Double.POSITIVE_INFINITY;
+            if (currentNode == end) {
+                // can connect to end
+                found = true;
+                break;
             }
 
-            // Get the minimum cost edge
-            Edge edge = edgeQueue.poll();
+            for (Edge edge : currentNode.edges.values()) {
+                if (edge.isBlocked) continue;
 
-            // Check if this edge connects a new node
-            Node node1 = edge.endNode1;
-            Node node2 = edge.endNode2;
-            Node nextNode = null;
+                Node neighbor = edge.getOtherNode(currentNode.id);
+                Double newCost = cost + edge.cost;
 
-            if (connectedNodes.contains(node1.id) && !connectedNodes.contains(node2.id)) {
-                nextNode = node2;
-            } else if (connectedNodes.contains(node2.id) && !connectedNodes.contains(node1.id)) {
-                nextNode = node1;
-            }
-
-            // If the edge does not connect a new node, skip it
-            if (nextNode == null) {
-                continue;
-            }
-
-            // Add the node to the connected set
-            connectedNodes.add(nextNode.id);
-
-            // Remove the node from prospectsToConnect if it's a PROSPECT
-            prospectsToConnect.remove(nextNode.id);
-
-            // Add the cost of the edge to the total cost
-            totalCost += edge.cost;
-
-            // Add all valid edges of the new node to the priority queue
-            for (Edge nextEdge : nextNode.edges.values()) {
-                if (!usedEdges.containsKey(nextEdge.id) && !connectedNodes.contains(nextEdge.getOtherNode(nextNode.id).id)) {
-                    edgeQueue.add(nextEdge);
+                if (!visited.containsKey(neighbor.id) || visited.get(neighbor.id) > newCost) {
+                    visited.put(neighbor.id, newCost);
+                    previousEdges.put(neighbor.id, edge);
+                    pq.add(neighbor);
                 }
             }
         }
 
-        return totalCost;
-    }*/
+        if(found){
+            //mark path
+            double cost = 0.0;
+            Node pathNode = end;
+            while (previousEdges.containsKey(pathNode.id)) {
+                Edge pathEdge = previousEdges.get(pathNode.id);
+                pathEdge.use();
+                cost += pathEdge.cost;
+                pathNode = pathEdge.getOtherNode(pathNode.id);
+            }
+            return cost;
+        }
+
+        //return infinity if no path found
+        return Double.POSITIVE_INFINITY;
+    }
+
 
 
 }

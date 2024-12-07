@@ -1,6 +1,5 @@
 package org.example.domain;
 
-import java.util.*;
 import java.util.HashMap;
 
 public class Node {
@@ -8,7 +7,7 @@ public class Node {
     public double x;
     public double y;
     public NodeType nodeType;
-    public Node referenced;
+    public Node reference;
 
     public HashMap<Integer, Edge> edges = new HashMap<>();
 
@@ -18,7 +17,7 @@ public class Node {
         this.x = x;
         this.y = y;
         this.nodeType = nodeType;
-        this.referenced = this;
+        this.reference = this;
     }
 
     public Node(Node node) {
@@ -27,7 +26,7 @@ public class Node {
         this.y = node.y;
         this.nodeType = node.nodeType;
         this.edges = new HashMap<>(node.edges);
-        this.referenced = this;
+        this.reference = this;
     }
 
     public void removeEdgeWithNode(Node node) {
