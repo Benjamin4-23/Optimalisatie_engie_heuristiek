@@ -12,14 +12,14 @@ public class Graph {
     public List<Integer> unlockedEdges;
     public HashMap<Integer, Edge> usedEdges;
     public HashMap<Integer, Node> usedNodes;
-    public ArrayList<ReconnectPair> reconnects;
+    public HashMap<Integer, ReconnectPair> reconnects;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.lockedEdges = new ArrayList<>();
         this.unlockedEdges = new ArrayList<>();
         this.usedEdges = new HashMap<>();
         this.usedNodes = new HashMap<>();
-        reconnects = new ArrayList<>();
+        reconnects = new HashMap<>();
         this.nodes = nodes;
         this.edges = edges;
         transform();
@@ -73,7 +73,7 @@ public class Graph {
         this.unlockedEdges = new ArrayList<>(other.unlockedEdges);
         this.usedEdges = new HashMap<>(other.usedEdges);
         this.usedNodes = new HashMap<>(other.usedNodes);
-        this.reconnects = new ArrayList<>(other.reconnects);
+        this.reconnects = new HashMap<>(other.reconnects);
     }
 
     public void transform() {
@@ -288,6 +288,7 @@ public class Graph {
 
             // Process each edge of the current node
             for (Edge edge : currentNode.edges.values()) {
+                if(edge.isBlocked) continue;
 
                 Node neighbor = edge.getOtherNode(currentNode.id);
 
@@ -332,14 +333,17 @@ public class Graph {
 
     public Double reconnect() {
         double cost = 0.0;
-        for (ReconnectPair pair : reconnects){
+        for (ReconnectPair pair : reconnects.values()){
             double pathCost = findPath(pair.start, pair.end);
             if(pathCost == Double.POSITIVE_INFINITY){
                 // replace original edge
-                Edge edge = this.edges.get(pair.originalId);
-                edge.use();
-                edge.isBlocked = false;
-                pathCost = edge.cost;
+                pathCost = 0;
+                for (int id : pair.ids){
+                    Edge edge = this.edges.get(id);
+                    edge.use();
+                    edge.isBlocked = false;
+                    pathCost += edge.cost;
+                }
             }
             cost += pathCost;
         }
