@@ -294,6 +294,17 @@ public class Graph {
 
                 double newCost = distances.get(currentNode.id) + edge.cost;
 
+                if(neighbor.nodeType == NodeType.PROSPECT){
+                    int activeConnections = 0;
+                    for (Edge e: neighbor.edges.values()){
+                        if (e.isUsed){
+                            activeConnections++;
+                        }
+                    }
+                    if(activeConnections>1) continue;
+                    if(activeConnections == 1 && !edge.isUsed) continue;
+                }
+
                 // Relaxation step
                 if (newCost < distances.get(neighbor.id)) {
                     distances.put(neighbor.id, newCost);
