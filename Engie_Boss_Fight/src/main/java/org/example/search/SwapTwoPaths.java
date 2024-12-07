@@ -31,7 +31,7 @@ public class SwapTwoPaths extends Move{
 
         List<Edge> temp = new ArrayList<>(this.graph.usedEdges.values());
         // Get 5 random edges from graph.unlockedEdges
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             int counter = 0;
             int randomIndex = 0;
             do{
@@ -49,10 +49,10 @@ public class SwapTwoPaths extends Move{
             this.disgardedCost += edge.cost;
             this.graph.usedEdges.remove(edge.id);
             edge.disgard();
-
             blockedEdges.add(edge);
             edge.isBlocked = true;
         }
+        //return 0.0;
         return calculateDeltaEvaluation();
     }
 
@@ -91,7 +91,7 @@ public class SwapTwoPaths extends Move{
 
     private double calculateDeltaEvaluation() {
         double cost = this.graph.dijkstra();
-        System.out.printf("cost: %.4f%n",cost);
+        //System.out.printf("cost: %.4f%n",cost);
         return cost;
         //double newCost = calculateEvaluation();
         /*double newCost = this.oldCost - this.disgardedCost + costthis.disgardedCost + cost;

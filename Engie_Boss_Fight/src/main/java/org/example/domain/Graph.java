@@ -265,9 +265,6 @@ public class Graph {
     public Double dijkstra() {
         double cost = 0.0;
         // Make sure all edges are unused
-        for (Edge edge : edges.values()) {
-            edge.disgard();
-        }
         this.usedEdges.clear();
 
         Node rootNode = nodes.get(-1);
@@ -316,11 +313,19 @@ public class Graph {
                 }
             }
         }
+        for (Node n : nodes.values()){
+            if(n.nodeType == NodeType.PROSPECT){
+                if(distances.get(n.id)==Double.POSITIVE_INFINITY){
+                    return Double.POSITIVE_INFINITY;
+                }
+            }
+        }
 
         // Calculate total cost
         for (Edge edge : usedEdges.values()) {
             cost += edge.cost;
         }
+
 
         return cost;
     }
