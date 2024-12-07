@@ -55,7 +55,10 @@ public class Graph {
     public Graph(Graph other) {
         // Deep copy of nodes
         this.nodes = new HashMap<>();
-        this.usedEdges = new HashMap<>(other.usedEdges);
+        this.usedEdges = new HashMap<>();
+        for (Map.Entry<Integer, Edge> entry : other.usedEdges.entrySet()) {
+            this.usedEdges.put(entry.getKey(), new Edge(entry.getValue()));
+        }
         for (Integer key : other.nodes.keySet()) {
             this.nodes.put(key, new Node(other.nodes.get(key))); // Assuming Node has a copy constructor
         }
