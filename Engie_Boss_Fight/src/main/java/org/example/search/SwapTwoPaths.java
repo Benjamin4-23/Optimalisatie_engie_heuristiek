@@ -91,7 +91,9 @@ public class SwapTwoPaths extends Move{
 
     private double calculateDeltaEvaluation() {
         double cost = this.graph.dijkstra();
-        //System.out.printf("cost: %.4f%n",cost);
+        /*if(cost!=Double.POSITIVE_INFINITY) {
+            System.out.printf("cost: %.4f%n", cost);
+        }*/
         return cost;
         //double newCost = calculateEvaluation();
         /*double newCost = this.oldCost - this.disgardedCost + costthis.disgardedCost + cost;

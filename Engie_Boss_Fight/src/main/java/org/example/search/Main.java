@@ -12,7 +12,7 @@ public class Main {
             // via validator
             String path = args[0];
             SearchAlgorithm alg = new SteepestDescent(path);
-            alg.execute(10000);
+            alg.execute(1000);
             MySolution bestSolution = (MySolution) alg.getBestSolution();
             OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
             writer.write(args[1]);
