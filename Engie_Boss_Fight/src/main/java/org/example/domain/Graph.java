@@ -268,7 +268,7 @@ public class Graph {
     public Double dijkstra() {
         double cost = 0.0;
         // Make sure all edges are unused
-        this.usedEdges.clear();
+        //this.usedEdges.clear();
 
         Node rootNode = nodes.get(-1);
         Map<Integer, Double> distances = new HashMap<>();

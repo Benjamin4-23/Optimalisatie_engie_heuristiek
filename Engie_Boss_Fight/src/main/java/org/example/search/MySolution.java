@@ -25,7 +25,7 @@ public class MySolution implements Solution {
 
     public MySolution(MySolution solution) {
         this.graph = new Graph(solution.getGraph());
-        this.cost = solution.cost;
+        this.cost = solution.getObjectiveValue();
     }
 
     public MySolution(Graph g, double d){
