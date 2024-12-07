@@ -37,8 +37,11 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
             Move move = new SwapTwoPaths();
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
+                System.out.println("New best result: " + bestResult);
                 lateAcceptanceList.addToBeginOfList(currentResult);
-                bestSolution = (MySolution)currentSolution.clone();
+                bestSolution = new MySolution(currentSolution);
+                bestSolution.setObjectiveValue(function.evaluate(bestSolution, null));
+                System.out.println("New best by copied solution: " + bestSolution.getObjectiveValue());
             }
             else {
                 if (currentResult <= lateAcceptanceList.getLastValueInTheList()) {

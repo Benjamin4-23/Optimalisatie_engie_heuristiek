@@ -8,8 +8,8 @@ import org.example.search.framework.*;
 
 public class SimulatedAnnealing extends SearchAlgorithm {
     private ObjectiveFunction function;
-    private Solution currentSolution;
-    private Solution bestSolution;
+    private MySolution currentSolution;
+    private MySolution bestSolution;
     private double currentResult;
     private double bestResult;
 
@@ -29,8 +29,10 @@ public class SimulatedAnnealing extends SearchAlgorithm {
 
             if (currentResult < bestResult) {
                 bestResult = currentResult;
-                bestSolution = (MySolution)currentSolution.clone();
-                System.out.println(bestResult);
+                System.out.println("New best result: " + bestResult);
+                bestSolution = new MySolution(currentSolution);
+                bestSolution.setObjectiveValue(function.evaluate(bestSolution, null));
+                System.out.println("New best by copied solution: " + bestSolution.getObjectiveValue());
 
             } else if (Math.exp((bestResult - currentResult) / Math.sqrt(currentResult) / (1.0001 - ((i * 1.0) / numberOfIterations))) < RandomGenerator.random.nextDouble()) {
                 move.undoMove(currentSolution);

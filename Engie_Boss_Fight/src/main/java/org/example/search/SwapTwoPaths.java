@@ -91,9 +91,14 @@ public class SwapTwoPaths extends Move{
     }
 
     private double calculateDeltaEvaluation() {
+        // Cost to reconnect the graph
         double cost = this.graph.dijkstra();
+        double newCost = calculateEvaluation();
+        solution.setObjectiveValue(newCost);
+        return newCost;
+        //double newCost = this.oldCost - this.disgardedCost + cost;
         //System.out.printf("cost: %.4f%n",cost);
-        return cost;
+        //return cost;
         //double newCost = calculateEvaluation();
         /*double newCost = this.oldCost - this.disgardedCost + costthis.disgardedCost + cost;
         this.delta = newCost - oldCost;
