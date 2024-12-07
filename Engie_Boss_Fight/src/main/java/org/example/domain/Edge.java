@@ -73,9 +73,9 @@ public class Edge {
             edge.isLocked = true;
         }
         if(endNode1.nodeType == NodeType.PROSPECT){
-            endNode1.reference = endNode2;
-        } else if (endNode2.nodeType == NodeType.PROSPECT){
             endNode2.reference = endNode1;
+        } else if (endNode2.nodeType == NodeType.PROSPECT){
+            endNode1.reference = endNode2;
         }
     }
     public void unlock(){

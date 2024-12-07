@@ -29,19 +29,20 @@ public class SwapTwoPaths extends Move{
         this.graph = ((MySolution) solution).getGraph();
         this.oldEdges = new HashMap<>(graph.usedEdges);
 
-        List<Edge> temp = new ArrayList<>(this.graph.usedEdges.values());
+        //List<Edge> temp = new ArrayList<>(this.graph.unlockedEdges);
         // Get 5 random edges from graph.unlockedEdges
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 1000; i++) {
             int counter = 0;
             int randomIndex = 0;
             do{
-                randomIndex = (int) (Math.random() * temp.size());
+                randomIndex = (int) (Math.random() * this.graph.unlockedEdges.size());
+
                 counter++;
             }while(indexes.contains(randomIndex) ||
-                    //!this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||
-                    //this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isLocked ||
-                    counter < 20);
-            this.indexes.add(temp.get(randomIndex).id);
+                    !this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||
+                    this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isLocked ||
+                    counter < 30);
+            this.indexes.add(this.graph.unlockedEdges.get(randomIndex));
         }
 
         for (Integer index : indexes) {

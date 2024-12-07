@@ -11,6 +11,7 @@ public class Graph {
     public List<Integer> lockedEdges;
     public List<Integer> unlockedEdges;
     public Map<Integer, Edge> usedEdges;
+    public Map<Integer, Node> usedNodes;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.lockedEdges = new ArrayList<>();
@@ -25,7 +26,6 @@ public class Graph {
         System.out.println("Number of nodes-edges after shaving: " + nodes.size() + "-" + edges.size());
         simplify();
         System.out.println("Number of nodes-edges after simplification: " + this.nodes.size() + "-" + this.edges.size());
-
         shave();
         System.out.println("\nNumber of nodes-edges after second shaving: " + this.nodes.size() + "-" + this.edges.size());
         simplify();
@@ -48,7 +48,7 @@ public class Graph {
             e.printStackTrace();
         }
 
-        //lockEdges();
+        lockEdges();
         System.out.println("\nLocked " + this.lockedEdges.size() + " prospect connections, " + this.unlockedEdges.size() + " unlocked edges left.");
     }
 
@@ -212,27 +212,25 @@ public class Graph {
 
     }
 
-    /*private void lockEdges() {
+    private void lockEdges() {
         for (Edge edge : edges.values()) {
             Node node1 = edge.endNode1;
             Node node2 = edge.endNode2;
 
             if (edge.edgeType == EdgeType.EXISTING || node1.nodeType == NodeType.PROSPECT || node2.nodeType == NodeType.PROSPECT) {
                 // Only lock when the prospect node has only one edge
-                if (node1.nodeType == NodeType.PROSPECT && node1.edges.size() == 1) {
-                    lockEdge(edge);
+                if ((node1.nodeType == NodeType.PROSPECT && node1.edges.size() == 1)||(node2.nodeType == NodeType.PROSPECT && node2.edges.size() == 1)) {
+                    edge.lock();
+                    edge.use();
+                    this.usedEdges.put(edge.id, edge);
                     this.lockedEdges.add(edge.id);
-                } else if (node2.nodeType == NodeType.PROSPECT && node2.edges.size() == 1) {
-                    lockEdge(edge);
-                    this.lockedEdges.add(edge.id);
-
+                    continue;
                 }
-            } else {
-                edge.unlock();
-                this.unlockedEdges.add(edge.id);
             }
+            edge.unlock();
+            this.unlockedEdges.add(edge.id);
         }
-    }*/
+    }
 
     private void clearNodes() {
         Set<Integer> visitedNodes = new HashSet<>();
@@ -284,14 +282,15 @@ public class Graph {
 
         while (!pq.isEmpty()) {
             Node currentNode = pq.poll();
-            if (currentNode.nodeType == NodeType.PROSPECT) continue;
+            // if reference is a prospect skip
+            if (currentNode.reference.nodeType == NodeType.PROSPECT) continue;
 
             // Process each edge of the current node
             for (Edge edge : currentNode.edges.values()) {
-                if(edge.isBlocked) continue;
+                // if blocked or locked skip
+                if(edge.isBlocked || edge.isLocked) continue;
 
                 Node neighbor = edge.getOtherNode(currentNode.id);
-
                 double newCost = distances.get(currentNode.id) + edge.cost;
 
                 if(neighbor.nodeType == NodeType.PROSPECT){
@@ -315,7 +314,7 @@ public class Graph {
         }
 
         for (Node prospect : nodes.values()) {
-            if (prospect.nodeType == NodeType.PROSPECT) {
+            if (prospect.reference.nodeType == NodeType.PROSPECT) {
                 Node pathNode = prospect;
                 while (previousEdges.containsKey(pathNode.id)) {
                     Edge pathEdge = previousEdges.get(pathNode.id);
@@ -328,8 +327,8 @@ public class Graph {
             }
         }
         for (Node n : nodes.values()){
-            if(n.nodeType == NodeType.PROSPECT){
-                if(distances.get(n.id)==Double.POSITIVE_INFINITY){
+            if(n.reference.nodeType == NodeType.PROSPECT){
+                if(distances.get(n.reference.id)==Double.POSITIVE_INFINITY){
                     return Double.POSITIVE_INFINITY;
                 }
             }
