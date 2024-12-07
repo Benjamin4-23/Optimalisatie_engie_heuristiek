@@ -22,6 +22,12 @@ public class MySolution implements Solution {
         this.graph = new Graph(reader.getNodes(), reader.getEdges());
         GenerateSolution();
     }
+
+    public MySolution(MySolution solution) {
+        this.graph = new Graph(solution.getGraph());
+        this.cost = solution.cost;
+    }
+
     public MySolution(Graph g, double d){
         this.graph = g;
         this.cost = d;
@@ -39,8 +45,9 @@ public class MySolution implements Solution {
     @Override
     public Object clone() {
         MySolution copy = null;
+        double cost = this.cost;
         try {
-            copy = new MySolution(new Graph(this.graph), this.cost);
+            copy = new MySolution(new Graph(this.graph), cost);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -13,8 +13,8 @@ import java.nio.file.Path;
 
 public class SteepestDescent extends SearchAlgorithm {
     private MyObjectiveFunction function;
-    private Solution currentSolution;
-    private Solution bestSolution;
+    private MySolution currentSolution;
+    private MySolution bestSolution;
     private double currentResult;
     private double bestResult;
 
@@ -31,16 +31,20 @@ public class SteepestDescent extends SearchAlgorithm {
         currentResult = bestResult;
         Move move = new SwapTwoPaths();
         for (int i = 0; i < numberOfIterations; i++) {
-            currentResult =  function.evaluate(currentSolution, move);
+            currentResult = function.evaluate(currentSolution, move);
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
-                bestSolution = (MySolution) currentSolution.clone();
+                System.out.println("New best result: " + bestResult);
+                bestSolution = new MySolution(currentSolution);
+                System.out.println("New best result: " + bestSolution.getObjectiveValue());
                 System.out.println(bestResult);
+                //System.exit(0);
             }
             else {
                 //System.out.println("Undoing move");
                 move.undoMove(currentSolution);
             }
+            //System.out.println("New best solution: " + bestSolution.getObjectiveValue());
 
         }
         //System.out.println("bestSolution " + function.evaluate(bestSolution, null) + " " + bestResult);
