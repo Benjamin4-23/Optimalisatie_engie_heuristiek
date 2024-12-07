@@ -32,7 +32,6 @@ public class SimulatedAnnealing extends SearchAlgorithm {
                 System.out.println("New best result: " + bestResult);
                 bestSolution = new MySolution(currentSolution);
                 bestSolution.setObjectiveValue(function.evaluate(bestSolution, null));
-                System.out.println("New best by copied solution: " + bestSolution.getObjectiveValue());
 
             } else if (Math.exp((bestResult - currentResult) / Math.sqrt(currentResult) / (1.0001 - ((i * 1.0) / numberOfIterations))) < RandomGenerator.random.nextDouble()) {
                 move.undoMove(currentSolution);
