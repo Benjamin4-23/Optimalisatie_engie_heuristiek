@@ -1,12 +1,15 @@
-package org.example.search;
+package org.example.search.movement;
 
-import org.example.domain.*;
+import org.example.domain.Edge;
+import org.example.domain.EdgeType;
+import org.example.domain.Graph;
+import org.example.search.MySolution;
 import org.example.search.framework.Move;
 import org.example.search.framework.Solution;
 
 import java.util.*;
 
-public class SwapTwoPaths extends Move{
+public class BlockBombs extends Move{
     private Solution solution;
     private  Graph graph;
     private double delta;

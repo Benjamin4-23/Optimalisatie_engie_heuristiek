@@ -3,7 +3,7 @@ package org.example.search.simulatedannealing;
 
 import org.example.search.MyObjectiveFunction;
 import org.example.search.MySolution;
-import org.example.search.SwapTwoPaths;
+import org.example.search.movement.BlockRandomEdges;
 import org.example.search.framework.*;
 
 public class SimulatedAnnealing extends SearchAlgorithm {
@@ -25,7 +25,7 @@ public class SimulatedAnnealing extends SearchAlgorithm {
     public double execute(int numberOfIterations) {
         currentResult = bestResult;
         for (int i = 0; i <= numberOfIterations; i++) {
-            Move move = new SwapTwoPaths();
+            Move move = new BlockRandomEdges();
 
             if (currentResult < bestResult) {
                 bestResult = currentResult;

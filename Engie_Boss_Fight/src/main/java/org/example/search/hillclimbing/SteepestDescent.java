@@ -2,14 +2,10 @@ package org.example.search.hillclimbing;
 
 import org.example.search.MyObjectiveFunction;
 import org.example.search.MySolution;
-import org.example.search.SwapTwoPaths;
+import org.example.search.movement.BlockRandomEdges;
 import org.example.search.framework.Move;
 import org.example.search.framework.SearchAlgorithm;
 import org.example.search.framework.Solution;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class SteepestDescent extends SearchAlgorithm {
     private MyObjectiveFunction function;
@@ -29,7 +25,7 @@ public class SteepestDescent extends SearchAlgorithm {
     @Override
     public double execute(int numberOfIterations) {
         currentResult = bestResult;
-        Move move = new SwapTwoPaths();
+        Move move = new BlockRandomEdges();
         for (int i = 0; i < numberOfIterations; i++) {
             currentResult = function.evaluate(currentSolution, move);
             if (currentResult < bestResult) {

@@ -2,7 +2,7 @@ package org.example.search.lateacceptance;
 
 import org.example.search.MyObjectiveFunction;
 import org.example.search.MySolution;
-import org.example.search.SwapTwoPaths;
+import org.example.search.movement.BlockRandomEdges;
 import org.example.search.framework.Move;
 import org.example.search.framework.SearchAlgorithm;
 import org.example.search.framework.Solution;
@@ -15,7 +15,7 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
     private double currentResult;
     private double bestResult;
     private LAList lateAcceptanceList;
-    private final int listLength = 6 ;
+    private final int listLength = 6 ; //OG 6
 
     public LateAcceptanceStrategy(String path) {
         this.function = new MyObjectiveFunction();
@@ -34,7 +34,7 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
         this.lateAcceptanceList.fillList(currentResult);
         int teller = 0;
         for (int i = 0; i < numberOfIterations; i++) {
-            Move move = new SwapTwoPaths();
+            Move move = new BlockRandomEdges();
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
                 System.out.println("New best result: " + bestResult);
