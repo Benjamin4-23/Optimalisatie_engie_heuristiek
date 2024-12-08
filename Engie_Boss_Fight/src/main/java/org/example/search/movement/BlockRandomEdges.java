@@ -18,6 +18,8 @@ public class BlockRandomEdges extends Move{
     List<Integer> indexes = new ArrayList<>();
     Set<Edge> blockedEdges = new HashSet<>();
 
+    private int numberOfEdges = 25;
+
     @Override
     public double doMove(Solution solution) {
         this.disgardedCost = 0.0;
@@ -30,32 +32,33 @@ public class BlockRandomEdges extends Move{
         this.graph = ((MySolution) solution).getGraph();
         this.oldEdges = new HashMap<>(graph.usedEdges);
 
-        //List<Edge> temp = new ArrayList<>(this.graph.unlockedEdges);
-        // Get 5 random edges from graph.unlockedEdges
-        for (int i = 0; i < 25; i++) {
-            int counter = 0;
-            int randomIndex = 0;
-            do{
-                randomIndex = (int) (Math.random() * this.graph.unlockedEdges.size());
-
-                counter++;
-            }while(indexes.contains(randomIndex) ||
-                    !this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||
-                    this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isLocked ||
-                    counter < 30);
-            this.indexes.add(this.graph.unlockedEdges.get(randomIndex));
-        }
+        this.indexes = selectTerminalEdges(numberOfEdges);
 
         for (Integer index : indexes) {
             Edge edge = this.graph.edges.get(index);
             this.disgardedCost += edge.cost;
             this.graph.usedEdges.remove(edge.id);
             edge.disgard();
-            //blockedEdges.add(edge);
-            //edge.isBlocked = true;
         }
         //return 0.0;
         return calculateDeltaEvaluation();
+    }
+
+    private List<Integer> selectTerminalEdges(int numberOfEdges){
+        List<Integer> idx = new ArrayList<>();
+        for (int i = 0; i < numberOfEdges; i++) {
+            int counter = 0;
+            int randomIndex;
+            do{
+                randomIndex = (int) (Math.random() * this.graph.unlockedEdges.size());
+                counter++;
+            }while(idx.contains(randomIndex) ||
+                    !this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||
+                    this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isLocked ||
+                    counter < 30);
+            idx.add(this.graph.unlockedEdges.get(randomIndex));
+        }
+        return idx;
     }
 
     @Override
@@ -97,18 +100,7 @@ public class BlockRandomEdges extends Move{
         double newCost = calculateEvaluation();
         solution.setObjectiveValue(newCost);
         return newCost;
-        //double newCost = this.oldCost - this.disgardedCost + cost;
-        //System.out.printf("cost: %.4f%n",cost);
-        //return cost;
-        //double newCost = calculateEvaluation();
-        /*double newCost = this.oldCost - this.disgardedCost + costthis.disgardedCost + cost;
-        this.delta = newCost - oldCost;
-        System.out.printf("old cost: %.4f, new cost: %.4f%n", oldCost, newCost);
-        //this.delta = cost - this.disgardedCost;
-        double currentResult = solution.getObjectiveValue();
-        double deltaEvaluation = currentResult + this.delta;
-        solution.setObjectiveValue(deltaEvaluation);
-        return deltaEvaluation;*/
+
     }
 
 

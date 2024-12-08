@@ -22,7 +22,7 @@ public class Main {
         //normal run
         //generate normal dijkstra file
         String file = "";
-        int fileNumber = 5;
+        int fileNumber = 1;
         switch (fileNumber){
             case 1: file = "bretigny_62p_1147n_1235e.json"; break;
             case 2: file = "bagnolet_353p_3844n_4221e.json"; break;
