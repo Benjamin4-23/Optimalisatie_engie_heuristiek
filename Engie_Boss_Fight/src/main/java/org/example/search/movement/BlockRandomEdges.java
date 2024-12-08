@@ -3,22 +3,25 @@ package org.example.search.movement;
 import org.example.domain.*;
 import org.example.search.MySolution;
 import org.example.search.framework.Move;
+import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.Solution;
 
 import java.util.*;
 
 public class BlockRandomEdges extends Move{
+    private final Random randie = RandomGenerator.random;
     private Solution solution;
     private  Graph graph;
     private double delta;
     private double disgardedCost = 0.0;
     private double oldCost = 0.0;
+    private Random random = new Random();
 
     private HashMap<Integer, Edge> oldEdges = new HashMap<>();
     List<Integer> indexes = new ArrayList<>();
     Set<Edge> blockedEdges = new HashSet<>();
 
-    private int numberOfEdges = 25;
+    private int numberOfEdges = 100; // best is 25 with math.random(), 22 with the random
 
     @Override
     public double doMove(Solution solution) {
@@ -50,7 +53,8 @@ public class BlockRandomEdges extends Move{
             int counter = 0;
             int randomIndex;
             do{
-                randomIndex = (int) (Math.random() * this.graph.unlockedEdges.size());
+                //randomIndex = (int) (this.random.nextInt(this.graph.unlockedEdges.size()));
+                randomIndex = (this.randie.nextInt(this.graph.unlockedEdges.size()));
                 counter++;
             }while(idx.contains(randomIndex) ||
                     !this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||

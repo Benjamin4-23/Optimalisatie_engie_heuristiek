@@ -1,15 +1,15 @@
 package org.example.search.movement;
 
-import org.example.domain.Edge;
-import org.example.domain.EdgeType;
-import org.example.domain.Graph;
+import org.example.domain.*;
 import org.example.search.MySolution;
 import org.example.search.framework.Move;
+import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.Solution;
 
 import java.util.*;
 
 public class BlockBombing extends Move{
+    private final Random randie = RandomGenerator.random;
     private Solution solution;
     private  Graph graph;
     private double delta;
@@ -20,7 +20,8 @@ public class BlockBombing extends Move{
     List<Integer> indexes = new ArrayList<>();
     Set<Edge> blockedEdges = new HashSet<>();
 
-    private int numberOfEdges = 25;
+    private int numberOfBombs = 11;
+    private int bombRadius = 2;
 
     @Override
     public double doMove(Solution solution) {
@@ -34,7 +35,7 @@ public class BlockBombing extends Move{
         this.graph = ((MySolution) solution).getGraph();
         this.oldEdges = new HashMap<>(graph.usedEdges);
 
-        this.indexes = selectTerminalEdges(numberOfEdges);
+        this.indexes = bombSolution(numberOfBombs, bombRadius);
 
         for (Integer index : indexes) {
             Edge edge = this.graph.edges.get(index);
@@ -46,22 +47,63 @@ public class BlockBombing extends Move{
         return calculateDeltaEvaluation();
     }
 
-    private List<Integer> selectTerminalEdges(int numberOfEdges){
-        List<Integer> idx = new ArrayList<>();
-        for (int i = 0; i < numberOfEdges; i++) {
+    private List<Integer> bombSolution(int numberOfBombs, int bombRadius){
+        List<Integer> edgeIndexes = new ArrayList<>();
+
+        Set<Integer> visitedNodes = new HashSet<>();
+        Set<Edge> edgesToRemove = new HashSet<>();
+
+        // Select random targets
+        List<Integer> usedNodes = new ArrayList<>(this.graph.usedNodes);
+
+        List<Integer> targets = new ArrayList<>();
+        for (int i = 0; i < numberOfBombs; i++) {
             int counter = 0;
             int randomIndex;
-            do{
-                randomIndex = (int) (Math.random() * this.graph.unlockedEdges.size());
+            Integer idx;
+            Node node;
+            do {
+                randomIndex = (this.randie.nextInt(usedNodes.size()));
                 counter++;
-            }while(idx.contains(randomIndex) ||
-                    !this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||
-                    this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isLocked ||
+                idx = usedNodes.get(randomIndex);
+                node = this.graph.nodes.get(idx);
+            } while (targets.contains(idx) || // Check for node ID, not index
+                    node.isLocked ||
                     counter < 30);
-            idx.add(this.graph.unlockedEdges.get(randomIndex));
+            targets.add(idx); // Add the node ID
+        }
+
+        // Bomb targets
+        for (Integer target : targets) {
+            // get the target node, and delete edges in all directions for radius nodes
+            edgeIndexes.addAll(bombNode(target, bombRadius, edgesToRemove, visitedNodes));
+        }
+        return edgeIndexes;
+    }
+
+    private List<Integer> bombNode(int targetNodeId, int radius, Set<Edge> edgesToRemove, Set<Integer> visitedNodes) {
+
+        if (radius < 0 || visitedNodes.contains(targetNodeId)) {
+            return new ArrayList<>();
+        }
+        List<Integer> idx = new ArrayList<>();
+
+        visitedNodes.add(targetNodeId);
+
+        Node targetNode = this.graph.nodes.get(targetNodeId);
+        for (Edge edge : targetNode.edges.values()) {
+            if (edge.isUsed) {
+                //edgesToRemove.add(edge);
+                idx.add(edge.id);
+
+                // Recursively bomb the neighboring nodes
+                int neighborNodeId = edge.getOtherNode(targetNode.id).id;
+                idx.addAll(bombNode(neighborNodeId, radius - 1, edgesToRemove, visitedNodes));
+            }
         }
         return idx;
     }
+
 
     @Override
     public void undoMove(Solution solution) {

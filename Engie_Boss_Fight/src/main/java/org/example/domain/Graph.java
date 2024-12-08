@@ -10,14 +10,14 @@ public class Graph {
     public HashMap<Integer, Edge> edges;
     public List<Integer> lockedEdges;
     public List<Integer> unlockedEdges;
+    public Set<Integer> usedNodes;
     public Map<Integer, Edge> usedEdges;
-    public Map<Integer, Node> usedNodes;
 
     public Graph(HashMap<Integer, Node> nodes, HashMap<Integer, Edge> edges) {
         this.lockedEdges = new ArrayList<>();
         this.unlockedEdges = new ArrayList<>();
         this.usedEdges = new HashMap<>();
-        this.usedNodes = new HashMap<>();
+        this.usedNodes = new HashSet<>();
         this.nodes = nodes;
         this.edges = edges;
         transform();
@@ -221,13 +221,19 @@ public class Graph {
             if (edge.edgeType == EdgeType.EXISTING || node1.nodeType == NodeType.PROSPECT || node2.nodeType == NodeType.PROSPECT) {
                 // Only lock when the prospect node has only one edge
                 if ((node1.nodeType == NodeType.PROSPECT && node1.edges.size() == 1)||(node2.nodeType == NodeType.PROSPECT && node2.edges.size() == 1)) {
-                    //edge.lock();
                     this.lockedEdges.add(edge.id);
+                    if(node1.nodeType == NodeType.PROSPECT){
+                        node1.isLocked = true;
+                    }else if(node2.nodeType == NodeType.PROSPECT){
+                        node2.isLocked = true;
+                    }
                     continue;
                 }
             }
             edge.unlock();
             this.unlockedEdges.add(edge.id);
+            node1.isLocked = false;
+            node2.isLocked = false;
         }
     }
 
@@ -324,8 +330,8 @@ public class Graph {
                     pathEdge.use(); // Mark edge as used
                     if (pathEdge.endNode1.id != rootNode.id && pathEdge.endNode2.id != rootNode.id) {
                         this.usedEdges.put(pathEdge.id, pathEdge);
-                        this.usedNodes.put(pathEdge.endNode1.id, pathEdge.endNode1);
-                        this.usedNodes.put(pathEdge.endNode2.id, pathEdge.endNode2);
+                        this.usedNodes.add(pathEdge.endNode1.id);
+                        this.usedNodes.add(pathEdge.endNode2.id);
                     }
                     pathNode = pathEdge.getOtherNode(pathNode.id);
                 }

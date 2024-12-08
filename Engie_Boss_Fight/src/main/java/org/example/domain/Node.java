@@ -8,6 +8,7 @@ public class Node {
     public double y;
     public NodeType nodeType;
     public Node reference;
+    public boolean isLocked = false;
 
     public HashMap<Integer, Edge> edges = new HashMap<>();
 
@@ -18,6 +19,7 @@ public class Node {
         this.y = y;
         this.nodeType = nodeType;
         this.reference = this;
+        this.isLocked = false;
     }
 
     public Node(Node node) {
@@ -27,6 +29,7 @@ public class Node {
         this.nodeType = node.nodeType;
         this.edges = new HashMap<>(node.edges);
         this.reference = this;
+        this.isLocked = node.isLocked;
     }
 
     public void removeEdgeWithNode(Node node) {

@@ -2,6 +2,7 @@ package org.example.search.hillclimbing;
 
 import org.example.search.MyObjectiveFunction;
 import org.example.search.MySolution;
+import org.example.search.movement.BlockBombing;
 import org.example.search.movement.BlockRandomEdges;
 import org.example.search.framework.Move;
 import org.example.search.framework.SearchAlgorithm;
