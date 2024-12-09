@@ -27,7 +27,7 @@ public class BlockRandomEdges extends Move{
     List<Integer> indexes = new ArrayList<>();
     Set<Edge> blockedEdges = new HashSet<>();
 
-    private int numberOfEdges = 22; // best is 25 with math.random(), 22 with the random
+    private int numberOfEdges = 100; // best is 25 with math.random(), 22 with the random
 
     public BlockRandomEdges(RandomGenerator randomGenerator) {
         this.random = randomGenerator.getRandom();
@@ -43,6 +43,7 @@ public class BlockRandomEdges extends Move{
 
         this.oldCost = solution.getObjectiveValue();
         this.graph = ((MySolution) solution).getGraph();
+        this.numberOfEdges = graph.edges.size() > 1000 ? 100 : 25;
         this.oldEdges = new HashMap<>(graph.usedEdges);
 
         this.indexes = selectTerminalEdges(numberOfEdges);

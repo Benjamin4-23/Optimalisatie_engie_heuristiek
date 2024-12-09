@@ -29,7 +29,7 @@ public class Main {
 
         // normal parallel run
         String file = "bretigny_576n_9591n_10353e.json";
-        int numThreads = 10;
+        int numThreads = 20;
 
         // Create thread pool and future list to store results
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);

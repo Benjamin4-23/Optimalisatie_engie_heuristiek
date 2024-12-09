@@ -33,7 +33,7 @@ public class SteepestDescent extends SearchAlgorithm {
             currentResult = function.evaluate(currentSolution, move);
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
-                System.out.println(/*"New best result: " + */bestResult);
+                //System.out.println(/*"New best result: " + */bestResult);
                 bestSolution = new MySolution(currentSolution);
                 bestSolution.setObjectiveValue(function.evaluate(bestSolution, null));
             }
