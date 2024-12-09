@@ -1,14 +1,10 @@
 package org.example.validator;
 
-import org.example.search.Main;
-import org.example.search.MySolution;
-import org.example.search.framework.SearchAlgorithm;
-import org.example.search.hillclimbing.SteepestDescent;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
+
+import org.example.search.Main;
 
 public class Validator {
     public static void main(String args[]) throws Exception {

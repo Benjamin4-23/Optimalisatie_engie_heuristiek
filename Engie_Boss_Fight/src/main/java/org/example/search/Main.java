@@ -1,5 +1,10 @@
 package org.example.search;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import org.example.data.OutputWriter;
 import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.SearchAlgorithm;
@@ -8,6 +13,7 @@ import org.example.search.hillclimbing.SteepestDescent;
 public class Main {
     // Set max runtime as 10 minutes
     public static final long MAX_RUNTIME = 10 * 60 * 1000;
+
     public static void main(String[] args) {
         if (args.length == 2) {
             // via validator
@@ -21,15 +27,18 @@ public class Main {
             return;
         }
 
-        // normal run with parallel execution
-        String file = "bretigny_62p_1147n_1235e.json"; // example file
-        
-        // Create multiple threads with different random seeds
+        // normal parallel run
+        String file = "bretigny_576n_9591n_10353e.json";
         int numThreads = 10;
-        Thread[] threads = new Thread[numThreads];
+
+        // Create thread pool and future list to store results
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+        Future<Result>[] futures = new Future[numThreads];
+
+        // Start parallel executions
         for (int i = 0; i < numThreads; i++) {
             final int seed = i;
-            threads[i] = new Thread(() -> {
+            futures[i] = executor.submit(() -> {
                 RandomGenerator randomGenerator = new RandomGenerator(seed);
                 SearchAlgorithm alg = new SteepestDescent("data/" + file, randomGenerator);
                 
@@ -39,22 +48,47 @@ public class Main {
                     alg.execute(10);
                 }
                 
-                MySolution bestSolution = (MySolution) alg.getBestSolution();
-                System.out.println("Thread " + seed + " best solution: " + bestSolution.getObjectiveValue());
-                
-                OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
-                writer.write("output/output_" + seed + "_" + file);
+                MySolution solution = (MySolution) alg.getBestSolution();
+                return new Result(seed, solution, solution.getObjectiveValue());
             });
-            threads[i].start();
         }
 
-        // Wait for all threads to complete
-        for (Thread thread : threads) {
+        // Find best result
+        Result bestResult = null;
+        for (int i = 0; i < numThreads; i++) {
             try {
-                thread.join();
-            } catch (InterruptedException e) {
+                Result result = futures[i].get();
+                if (bestResult == null || result.cost < bestResult.cost) {
+                    bestResult = result;
+                }
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
+        }
+
+        // Shutdown executor
+        executor.shutdown();
+
+        // Print and save best result
+        if (bestResult != null) {
+            System.out.println("Best result found by thread " + bestResult.seed + 
+                             " with cost: " + bestResult.cost);
+            OutputWriter writer = new OutputWriter(bestResult.solution.getGraph(), 
+                                                 bestResult.solution.getObjectiveValue());
+            writer.write("output/output_" + file);
+        }
+    }
+
+    // Helper class to store results
+    private static class Result {
+        final int seed;
+        final MySolution solution;
+        final double cost;
+
+        Result(int seed, MySolution solution, double cost) {
+            this.seed = seed;
+            this.solution = solution;
+            this.cost = cost;
         }
     }
 }
