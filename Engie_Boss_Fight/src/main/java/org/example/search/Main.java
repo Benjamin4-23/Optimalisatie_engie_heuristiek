@@ -24,11 +24,11 @@ public class Main {
         //normal run
         //generate normal dijkstra file
         String file = "";
-        int fileNumber = 3;
+        int fileNumber = 2;
         switch (fileNumber){
-            case 1: file = "bretigny_62p_1147n_1235e.json"; break; // STDE @ 22
-            case 2: file = "bagnolet_353p_3844n_4221e.json"; break; // STDE @ 40
-            case 3: file = "bretigny_576n_9591n_10353e.json"; break; // STDE @ 60, 100
+            case 1: file = "bretigny_62p_1147n_1235e.json"; break; // STDE @ 22, 20
+            case 2: file = "bagnolet_353p_3844n_4221e.json"; break; // STDE @ 40, 20 kan evt ook? 100 lukt ook!
+            case 3: file = "bretigny_576n_9591n_10353e.json"; break; // STDE @ 100
             case 4: file = "bagnolet_1366p_13523n_15065e.json"; break; // STDE @ 100
             case 5: file = "bagnolet_2081p_18464n_20478e.json"; break; // STDE @ 100
         }
