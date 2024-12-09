@@ -7,26 +7,28 @@ import org.example.search.movement.BlockRandomEdges;
 import org.example.search.framework.Move;
 import org.example.search.framework.SearchAlgorithm;
 import org.example.search.framework.Solution;
+import org.example.search.framework.RandomGenerator;
 
 public class SteepestDescent extends SearchAlgorithm {
+    private final RandomGenerator randomGenerator;
     private MyObjectiveFunction function;
     private MySolution currentSolution;
     private MySolution bestSolution;
     private double currentResult;
     private double bestResult;
 
-    public SteepestDescent(String path) {
+    public SteepestDescent(String path, RandomGenerator randomGenerator) {
+        this.randomGenerator = randomGenerator;
         this.function = new MyObjectiveFunction();
         this.currentSolution = new MySolution(path);
         this.bestSolution = this.currentSolution;
-        //this.bestResult = this.function.evaluate(this.bestSolution, null);
         this.bestResult = this.currentSolution.getObjectiveValue();
         System.out.println("Initial result: " + bestResult);
     }
     @Override
     public double execute(int numberOfIterations) {
         currentResult = bestResult;
-        Move move = new BlockRandomEdges();
+        Move move = new BlockRandomEdges(randomGenerator);
         for (int i = 0; i < numberOfIterations; i++) {
             currentResult = function.evaluate(currentSolution, move);
             if (currentResult <= bestResult) {

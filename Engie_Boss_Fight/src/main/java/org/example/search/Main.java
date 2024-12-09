@@ -1,10 +1,9 @@
 package org.example.search;
 
 import org.example.data.OutputWriter;
+import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.SearchAlgorithm;
 import org.example.search.hillclimbing.SteepestDescent;
-import org.example.search.lateacceptance.LateAcceptanceStrategy;
-import org.example.search.simulatedannealing.SimulatedAnnealing;
 
 public class Main {
     // Set max runtime as 10 minutes
@@ -13,7 +12,8 @@ public class Main {
         if (args.length == 2) {
             // via validator
             String path = args[0];
-            SearchAlgorithm alg = new SteepestDescent(path) ;
+            RandomGenerator randomGenerator = new RandomGenerator(1); // Use seed 1 for validation
+            SearchAlgorithm alg = new SteepestDescent(path, randomGenerator);
             alg.execute(20000);
             MySolution bestSolution = (MySolution) alg.getBestSolution();
             OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
@@ -21,27 +21,40 @@ public class Main {
             return;
         }
 
-        //normal run
-        //generate normal dijkstra file
-        String file = "";
-        int fileNumber = 3;
-        switch (fileNumber){
-            case 1: file = "bretigny_62p_1147n_1235e.json"; break; // STDE @ 22
-            case 2: file = "bagnolet_353p_3844n_4221e.json"; break; // STDE @ 40
-            case 3: file = "bretigny_576n_9591n_10353e.json"; break; // STDE @ 60, 100
-            case 4: file = "bagnolet_1366p_13523n_15065e.json"; break; // STDE @ 100
-            case 5: file = "bagnolet_2081p_18464n_20478e.json"; break; // STDE @ 100
+        // normal run with parallel execution
+        String file = "bretigny_62p_1147n_1235e.json"; // example file
+        
+        // Create multiple threads with different random seeds
+        int numThreads = 10;
+        Thread[] threads = new Thread[numThreads];
+        for (int i = 0; i < numThreads; i++) {
+            final int seed = i;
+            threads[i] = new Thread(() -> {
+                RandomGenerator randomGenerator = new RandomGenerator(seed);
+                SearchAlgorithm alg = new SteepestDescent("data/" + file, randomGenerator);
+                
+                // Start timer
+                long startTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - startTime < MAX_RUNTIME) {
+                    alg.execute(10);
+                }
+                
+                MySolution bestSolution = (MySolution) alg.getBestSolution();
+                System.out.println("Thread " + seed + " best solution: " + bestSolution.getObjectiveValue());
+                
+                OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
+                writer.write("output/output_" + seed + "_" + file);
+            });
+            threads[i].start();
         }
 
-        SearchAlgorithm alg = new SteepestDescent("data/" + file);
-        // Start timer
-        long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < MAX_RUNTIME) {
-            alg.execute(10);
+        // Wait for all threads to complete
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        MySolution bestSolution = (MySolution) alg.getBestSolution();
-        System.out.println("Best solution: " + bestSolution.getObjectiveValue());
-        OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());
-        writer.write("output/output_" + file);
     }
 }
