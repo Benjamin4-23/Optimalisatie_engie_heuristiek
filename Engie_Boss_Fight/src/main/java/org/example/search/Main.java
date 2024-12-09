@@ -53,11 +53,14 @@ public class Main {
             });
         }
 
-        // Find best result
+        // Find best result and store all results
         Result bestResult = null;
+        Result[] allResults = new Result[numThreads];
+        
         for (int i = 0; i < numThreads; i++) {
             try {
                 Result result = futures[i].get();
+                allResults[i] = result;
                 if (bestResult == null || result.cost < bestResult.cost) {
                     bestResult = result;
                 }
@@ -69,10 +72,21 @@ public class Main {
         // Shutdown executor
         executor.shutdown();
 
+        // Print all results
+        System.out.println("\nResults from all threads:");
+        System.out.println("------------------------");
+        for (Result result : allResults) {
+            System.out.printf("Thread %d (seed: %d) - Cost: %.2f%n", 
+                            result.seed, result.seed, result.cost);
+        }
+
         // Print and save best result
         if (bestResult != null) {
-            System.out.println("Best result found by thread " + bestResult.seed + 
-                             " with cost: " + bestResult.cost);
+            System.out.println("\nBEST RESULT:");
+            System.out.println("------------------------");
+            System.out.println("Thread " + bestResult.seed + 
+                             " (seed: " + bestResult.seed + 
+                             ") with cost: " + bestResult.cost);
             OutputWriter writer = new OutputWriter(bestResult.solution.getGraph(), 
                                                  bestResult.solution.getObjectiveValue());
             writer.write("output/output_" + file);
