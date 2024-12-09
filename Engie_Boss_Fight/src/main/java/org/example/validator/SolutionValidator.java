@@ -1,10 +1,10 @@
 package org.example.validator;
 
-import org.example.search.Main;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+
+import org.example.search.Main;
 
 public class SolutionValidator {
     public static void main(String args[]) throws Exception {

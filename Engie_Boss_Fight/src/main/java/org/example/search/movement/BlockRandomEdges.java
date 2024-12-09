@@ -1,27 +1,37 @@
 package org.example.search.movement;
 
-import org.example.domain.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import org.example.domain.Edge;
+import org.example.domain.EdgeType;
+import org.example.domain.Graph;
 import org.example.search.MySolution;
 import org.example.search.framework.Move;
 import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.Solution;
 
-import java.util.*;
-
 public class BlockRandomEdges extends Move{
-    private final Random randie = RandomGenerator.random;
+    private final Random random;
     private Solution solution;
     private  Graph graph;
     private double delta;
     private double disgardedCost = 0.0;
     private double oldCost = 0.0;
-    private Random random = new Random();
 
     private HashMap<Integer, Edge> oldEdges = new HashMap<>();
     List<Integer> indexes = new ArrayList<>();
     Set<Edge> blockedEdges = new HashSet<>();
 
-    private int numberOfEdges; // best is 25 with math.random(), 22 with the random
+    private int numberOfEdges = 100; // best is 25 with math.random(), 22 with the random
+
+    public BlockRandomEdges(RandomGenerator randomGenerator) {
+        this.random = randomGenerator.getRandom();
+    }
 
     @Override
     public double doMove(Solution solution) {
@@ -55,7 +65,7 @@ public class BlockRandomEdges extends Move{
             int randomIndex;
             do{
                 //randomIndex = (int) (this.random.nextInt(this.graph.unlockedEdges.size()));
-                randomIndex = (this.randie.nextInt(this.graph.unlockedEdges.size()));
+                randomIndex = (this.random.nextInt(this.graph.unlockedEdges.size()));
                 counter++;
             }while(idx.contains(randomIndex) ||
                     !this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||

@@ -2,22 +2,24 @@ package org.example.search.lateacceptance;
 
 import org.example.search.MyObjectiveFunction;
 import org.example.search.MySolution;
-import org.example.search.movement.BlockRandomEdges;
 import org.example.search.framework.Move;
+import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.SearchAlgorithm;
 import org.example.search.framework.Solution;
+import org.example.search.movement.BlockRandomEdges;
 
 public class LateAcceptanceStrategy extends SearchAlgorithm {
-
+    private final RandomGenerator randomGenerator;
     private MyObjectiveFunction function;
     private MySolution currentSolution;
     private MySolution bestSolution;
     private double currentResult;
     private double bestResult;
     private LAList lateAcceptanceList;
-    private final int listLength = 6 ;
+    private final int listLength = 6;
 
-    public LateAcceptanceStrategy(String path) {
+    public LateAcceptanceStrategy(String path, RandomGenerator randomGenerator) {
+        this.randomGenerator = randomGenerator;
         this.function = new MyObjectiveFunction();
         currentSolution = new MySolution(path);
         bestSolution = currentSolution;
@@ -27,14 +29,11 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
     }
 
     @Override
-    public double execute(int numberOfIterations)  {
-
-        //om te beginnen in totaal evalueren
+    public double execute(int numberOfIterations) {
         currentResult = function.evaluate(currentSolution, null);
         this.lateAcceptanceList.fillList(currentResult);
-        int teller = 0;
         for (int i = 0; i < numberOfIterations; i++) {
-            Move move = new BlockRandomEdges();
+            Move move = new BlockRandomEdges(randomGenerator);
             if (currentResult <= bestResult) {
                 bestResult = currentResult;
                 System.out.println("New best result: " + bestResult);
@@ -51,7 +50,7 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
                     move.undoMove(currentSolution);
                 }
             }
-            currentResult =  function.evaluate(currentSolution, move);
+            currentResult = function.evaluate(currentSolution, move);
             if (i % 100 == 0) {
                 System.out.println("Iteration #" + i + " " + bestResult + " " + currentResult);
                 for(int j=0;j<this.lateAcceptanceList.getSize();j++){
@@ -64,16 +63,13 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
         return bestResult;
     }
 
-
     @Override
     public Solution getBestSolution() {
         return bestSolution;
     }
 
-
     @Override
     public Solution getCurrentSolution() {
         return currentSolution;
     }
-
 }
