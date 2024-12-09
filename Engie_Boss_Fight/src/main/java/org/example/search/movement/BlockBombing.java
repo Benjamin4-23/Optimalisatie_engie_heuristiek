@@ -1,15 +1,23 @@
 package org.example.search.movement;
 
-import org.example.domain.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import org.example.domain.Edge;
+import org.example.domain.EdgeType;
+import org.example.domain.Graph;
+import org.example.domain.Node;
 import org.example.search.MySolution;
 import org.example.search.framework.Move;
 import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.Solution;
 
-import java.util.*;
-
 public class BlockBombing extends Move{
-    private Random randie = RandomGenerator.random;
+    private final Random random;
     private Solution solution;
     private  Graph graph;
     private double delta;
@@ -22,6 +30,10 @@ public class BlockBombing extends Move{
 
     private int numberOfBombs = 5;
     private int bombRadius = 5;
+
+    public BlockBombing(RandomGenerator randomGenerator) {
+        this.random = randomGenerator.getRandom();
+    }
 
     @Override
     public double doMove(Solution solution) {
@@ -63,7 +75,7 @@ public class BlockBombing extends Move{
             Integer idx;
             Node node;
             do {
-                randomIndex = (this.randie.nextInt(usedNodes.size()));
+                randomIndex = (this.random.nextInt(usedNodes.size()));
                 counter++;
                 idx = usedNodes.get(randomIndex);
                 node = this.graph.nodes.get(idx);
