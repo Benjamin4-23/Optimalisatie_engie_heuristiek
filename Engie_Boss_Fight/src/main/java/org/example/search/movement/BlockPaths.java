@@ -1,15 +1,22 @@
 package org.example.search.movement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
 import org.example.domain.Edge;
 import org.example.domain.EdgeType;
 import org.example.domain.Graph;
 import org.example.search.MySolution;
 import org.example.search.framework.Move;
+import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.Solution;
 
-import java.util.*;
-
 public class BlockPaths extends Move{
+    private final Random random;
     private Solution solution;
     private  Graph graph;
     private double delta;
@@ -21,6 +28,10 @@ public class BlockPaths extends Move{
     Set<Edge> blockedEdges = new HashSet<>();
 
     private int numberOfEdges = 25;
+
+    public BlockPaths(RandomGenerator randomGenerator) {
+        this.random = randomGenerator.getRandom();
+    }
 
     @Override
     public double doMove(Solution solution) {
@@ -52,7 +63,7 @@ public class BlockPaths extends Move{
             int counter = 0;
             int randomIndex;
             do{
-                randomIndex = (int) (Math.random() * this.graph.unlockedEdges.size());
+                randomIndex = (int) (this.random.nextDouble() * this.graph.unlockedEdges.size());
                 counter++;
             }while(idx.contains(randomIndex) ||
                     !this.graph.edges.get(this.graph.unlockedEdges.get(randomIndex)).isUsed ||
