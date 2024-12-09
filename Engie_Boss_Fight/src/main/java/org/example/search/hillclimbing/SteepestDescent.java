@@ -29,12 +29,11 @@ public class SteepestDescent extends SearchAlgorithm {
         Move move = new BlockRandomEdges();
         for (int i = 0; i < numberOfIterations; i++) {
             currentResult = function.evaluate(currentSolution, move);
-            if (currentResult < bestResult) {
+            if (currentResult <= bestResult) {
                 bestResult = currentResult;
-                System.out.println("New best result: " + bestResult);
+                System.out.println(/*"New best result: " + */bestResult);
                 bestSolution = new MySolution(currentSolution);
                 bestSolution.setObjectiveValue(function.evaluate(bestSolution, null));
-                //System.exit(0);
             }
             else {
                 //System.out.println("Undoing move");

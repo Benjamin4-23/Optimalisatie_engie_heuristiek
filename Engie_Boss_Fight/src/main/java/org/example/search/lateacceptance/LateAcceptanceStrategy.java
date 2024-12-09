@@ -15,7 +15,7 @@ public class LateAcceptanceStrategy extends SearchAlgorithm {
     private double currentResult;
     private double bestResult;
     private LAList lateAcceptanceList;
-    private final int listLength = 6 ; //OG 6
+    private final int listLength = 6 ;
 
     public LateAcceptanceStrategy(String path) {
         this.function = new MyObjectiveFunction();
