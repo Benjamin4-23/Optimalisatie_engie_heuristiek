@@ -7,6 +7,8 @@ import org.example.search.lateacceptance.LateAcceptanceStrategy;
 import org.example.search.simulatedannealing.SimulatedAnnealing;
 
 public class Main {
+    // Set max runtime as 10 minutes
+    public static final long MAX_RUNTIME = 10 * 60 * 1000;
     public static void main(String[] args) {
         if (args.length == 2) {
             // via validator
@@ -22,7 +24,7 @@ public class Main {
         //normal run
         //generate normal dijkstra file
         String file = "";
-        int fileNumber = 5;
+        int fileNumber = 3;
         switch (fileNumber){
             case 1: file = "bretigny_62p_1147n_1235e.json"; break; // STDE @ 22
             case 2: file = "bagnolet_353p_3844n_4221e.json"; break; // STDE @ 40
@@ -31,7 +33,12 @@ public class Main {
             case 5: file = "bagnolet_2081p_18464n_20478e.json"; break; // STDE @ 100
         }
         SearchAlgorithm alg = new SteepestDescent("data/" + file);
-        alg.execute(50000);
+        // Start timer
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < MAX_RUNTIME) {
+            alg.execute(10);
+        }
+        //alg.execute(50000);
         MySolution bestSolution = (MySolution) alg.getBestSolution();
         System.out.println("Best solution: " + bestSolution.getObjectiveValue());
         OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());

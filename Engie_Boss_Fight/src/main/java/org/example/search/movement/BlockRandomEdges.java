@@ -21,7 +21,7 @@ public class BlockRandomEdges extends Move{
     List<Integer> indexes = new ArrayList<>();
     Set<Edge> blockedEdges = new HashSet<>();
 
-    private int numberOfEdges = 100; // best is 25 with math.random(), 22 with the random
+    private int numberOfEdges = 60; // best is 25 with math.random(), 22 with the random
 
     @Override
     public double doMove(Solution solution) {
