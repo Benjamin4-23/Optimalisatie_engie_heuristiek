@@ -32,13 +32,13 @@ public class Main {
             case 4: file = "bagnolet_1366p_13523n_15065e.json"; break; // STDE @ 100
             case 5: file = "bagnolet_2081p_18464n_20478e.json"; break; // STDE @ 100
         }
+
         SearchAlgorithm alg = new SteepestDescent("data/" + file);
         // Start timer
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - startTime < MAX_RUNTIME) {
             alg.execute(10);
         }
-        //alg.execute(50000);
         MySolution bestSolution = (MySolution) alg.getBestSolution();
         System.out.println("Best solution: " + bestSolution.getObjectiveValue());
         OutputWriter writer = new OutputWriter(bestSolution.getGraph(), bestSolution.getObjectiveValue());

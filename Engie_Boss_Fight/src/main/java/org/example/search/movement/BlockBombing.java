@@ -9,7 +9,7 @@ import org.example.search.framework.Solution;
 import java.util.*;
 
 public class BlockBombing extends Move{
-    private final Random randie = RandomGenerator.random;
+    private Random randie = RandomGenerator.random;
     private Solution solution;
     private  Graph graph;
     private double delta;
@@ -20,8 +20,8 @@ public class BlockBombing extends Move{
     List<Integer> indexes = new ArrayList<>();
     Set<Edge> blockedEdges = new HashSet<>();
 
-    private int numberOfBombs = 11;
-    private int bombRadius = 2;
+    private int numberOfBombs = 5;
+    private int bombRadius = 5;
 
     @Override
     public double doMove(Solution solution) {
