@@ -47,7 +47,8 @@ public class BlockRandomEdges extends Move{
         //if(this.graph.unlockedEdges.size() > 1000) this.numberOfEdges = 100;
         //else if (this.graph.unlockedEdges.size() > 500) this.numberOfEdges = 50;
         //else this.numberOfEdges = 25;
-        this.numberOfEdges = (int) this.graph.unlockedEdges.size() * 10 / 100;
+        if(this.graph.unlockedEdges.size() > 1000) this.numberOfEdges = (int) this.graph.unlockedEdges.size() * 5 / 100;
+        else this.numberOfEdges = (int) this.graph.unlockedEdges.size() * 10 / 100;
         this.oldEdges = new HashMap<>(graph.usedEdges);
 
         this.indexes = selectTerminalEdges(numberOfEdges);

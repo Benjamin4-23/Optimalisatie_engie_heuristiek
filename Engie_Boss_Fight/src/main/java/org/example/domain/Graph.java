@@ -50,7 +50,7 @@ public class Graph {
         }
 
         lockEdges();
-        System.out.println("\nLocked " + this.lockedEdges.size() + " prospect connections, " + this.unlockedEdges.size() + " unlocked edges left.");
+        //System.out.println("\nLocked " + this.lockedEdges.size() + " prospect connections, " + this.unlockedEdges.size() + " unlocked edges left.");
     }
 
     public Graph(Graph other) {

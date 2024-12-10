@@ -9,6 +9,8 @@ import org.example.data.OutputWriter;
 import org.example.search.framework.RandomGenerator;
 import org.example.search.framework.SearchAlgorithm;
 import org.example.search.hillclimbing.SteepestDescent;
+import org.example.search.lateacceptance.LateAcceptanceStrategy;
+import org.example.search.simulatedannealing.SimulatedAnnealing;
 
 public class Main {
     // Set max runtime as 10 minutes
@@ -35,7 +37,7 @@ public class Main {
             "bagnolet_1366p_13523n_15065e.json" // STDE @ 100
             "bagnolet_2081p_18464n_20478e.json" // STDE @ 100
         */
-        final String file = "bagnolet_353p_3844n_4221e.json";
+        final String file = "bagnolet_1366p_13523n_15065e.json";
 
         int numThreads = 10;
 
