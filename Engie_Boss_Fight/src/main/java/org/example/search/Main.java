@@ -28,19 +28,16 @@ public class Main {
         }
 
         //normal run
-        //generate normal dijkstra file
-        /*String file = "";
-        int fileNumber = 2;
-        switch (fileNumber){
-            case 1: file = "bretigny_62p_1147n_1235e.json"; break; // STDE @ 22, 20
-            case 2: file = "bagnolet_353p_3844n_4221e.json"; break; // STDE @ 40, 20 kan evt ook? 100 lukt ook!
-            case 3: file = "bretigny_576n_9591n_10353e.json"; break; // STDE @ 100
-            case 4: file = "bagnolet_1366p_13523n_15065e.json"; break; // STDE @ 100
-            case 5: file = "bagnolet_2081p_18464n_20478e.json"; break; // STDE @ 100
-        }*/
+        /*
+            "bretigny_62p_1147n_1235e.json" // STDE @ 22, 20
+            "bagnolet_353p_3844n_4221e.json" // STDE @ 40, 20 kan evt ook? 100 lukt ook!
+            "bretigny_576n_9591n_10353e.json" // STDE @ 100
+            "bagnolet_1366p_13523n_15065e.json" // STDE @ 100
+            "bagnolet_2081p_18464n_20478e.json" // STDE @ 100
+        */
         final String file = "bagnolet_353p_3844n_4221e.json";
 
-        int numThreads = 20;
+        int numThreads = 10;
 
         // Create thread pool and future list to store results
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
@@ -48,7 +45,7 @@ public class Main {
 
         // Start parallel executions
         for (int i = 0; i < numThreads; i++) {
-            final int seed = i;
+            final int seed = i + 1;
             futures[i] = executor.submit(() -> {
                 RandomGenerator randomGenerator = new RandomGenerator(seed);
                 SearchAlgorithm alg = new SteepestDescent("data/" + file, randomGenerator);

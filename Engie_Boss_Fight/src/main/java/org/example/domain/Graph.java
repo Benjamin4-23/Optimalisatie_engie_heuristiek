@@ -21,16 +21,16 @@ public class Graph {
         this.nodes = nodes;
         this.edges = edges;
         transform();
-        System.out.println("Number of nodes - edges before shaving: " + nodes.size() + "-" + edges.size());
+        //System.out.println("Number of nodes - edges before shaving: " + nodes.size() + "-" + edges.size());
         shave();
         clearNodes();
-        System.out.println("Number of nodes-edges after shaving: " + nodes.size() + "-" + edges.size());
+        //System.out.println("Number of nodes-edges after shaving: " + nodes.size() + "-" + edges.size());
         simplify();
-        System.out.println("Number of nodes-edges after simplification: " + this.nodes.size() + "-" + this.edges.size());
+        //System.out.println("Number of nodes-edges after simplification: " + this.nodes.size() + "-" + this.edges.size());
         shave();
-        System.out.println("\nNumber of nodes-edges after second shaving: " + this.nodes.size() + "-" + this.edges.size());
+        //System.out.println("\nNumber of nodes-edges after second shaving: " + this.nodes.size() + "-" + this.edges.size());
         simplify();
-        System.out.println("Number of nodes-edges after second simplification: " + this.nodes.size() + "-" + this.edges.size());
+        //System.out.println("Number of nodes-edges after second simplification: " + this.nodes.size() + "-" + this.edges.size());
 
         StringBuilder jsonBuffer = new StringBuilder();
         jsonBuffer.append("{\"nodes\":[");
